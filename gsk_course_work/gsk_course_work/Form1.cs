@@ -25,10 +25,15 @@ namespace gsk_course_work
         // 3 - Поворот вокруг заданного центра на произвольный угол
         // 4 - Зеркальное отражение относительно центра фигуры
         // 5 - Зеркальное отражение относительно вертикальной прямой
-        List<Point> customPoints = new List<Point>();
+        List<PointF> customPoints = new List<PointF>();
         int countPoints = 0;
         int chosenFigure = -1;
         Point previousLocation = new Point();
+        PointF chosenCenter = new PointF(-1, -1);
+        int verLineX = -1;
+        string helpCenterString = "Выберите центр, кликнув на форме";
+        string helpVerLineString = "Выберите X для вертикальной прямой";
+        int prevAngle = 0;
 
         Spline spline;
         Segment segment;
@@ -43,6 +48,8 @@ namespace gsk_course_work
             tempCanvas = new Bitmap(canvas.Width, canvas.Height);  
             g = Graphics.FromImage(tempCanvas);
             figures = new List<Figure>();
+            helpLabel.Visible = false;
+            angleTrackBar.Visible = false;
             //g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
         }
 
@@ -74,7 +81,7 @@ namespace gsk_course_work
                         countPoints++;
                         if (countPoints == 4)
                         {
-                            spline.VertexList = customPoints.ConvertAll(item => new Point(item.X, item.Y));
+                            spline.VertexList = customPoints.ConvertAll(item => new PointF(item.X, item.Y));
                             figures.Add(spline);
                             countPoints = 0;
                             customPoints.Clear();
@@ -101,7 +108,7 @@ namespace gsk_course_work
                         countPoints++;
                         if (countPoints == 2)
                         {
-                            segment.VertexList = customPoints.ConvertAll(item => new Point(item.X, item.Y));
+                            segment.VertexList = customPoints.ConvertAll(item => new PointF(item.X, item.Y));
                             figures.Add(segment);
                             customPoints.Clear();
                             countPoints = 0;
@@ -143,6 +150,53 @@ namespace gsk_course_work
                 case 2:
                     {
                         previousLocation = e.Location;
+                    }
+                    break;
+                case 3:
+                    {
+                        if(chosenCenter.X == -1)
+                        {
+                            prevAngle = 0;
+                            chosenCenter = e.Location;
+                            helpLabel.Visible = false;
+                            angleTrackBar.Visible = true;
+                        }
+                        else
+                        {
+                            prevAngle = 0;
+                            chosenCenter = new PointF(-1, -1);
+                            angleTrackBar.Value = 0;
+                            angleTrackBar.Visible = false;
+                            chosenCenter = new PointF(-1, -1);
+                            chosenFigure = -1;
+                            Operation = -1; //никакая операция
+                        }
+                    }
+                    break;
+                case 4:
+                    {
+                        if(chosenCenter.X != -1)
+                        {
+                            chosenCenter = new PointF(-1, -1);
+                            chosenFigure = -1;
+                            Operation = -1;
+                        }
+                    }
+                    break;
+                case 5:
+                    {
+                        if(verLineX == -1)
+                        {
+                            verLineX = e.Location.X;
+                            helpLabel.Visible = false;
+                        }
+                        else
+                        {
+                            figures[chosenFigure].VerLineReflection(new PointF(verLineX, 0));
+                            chosenFigure = -1;
+                            verLineX = -1;
+                            Operation = -1;
+                        }
                     }
                     break;
             }
@@ -195,6 +249,18 @@ namespace gsk_course_work
             {
                 figures[i].DrawFigure();
                 if (chosenFigure == i) figures[i].DrawSelection();
+                if (chosenCenter.X != -1)
+                {
+                    g.DrawEllipse(new Pen(Color.Black), chosenCenter.X - 2, chosenCenter.Y - 2, 4, 4);
+                    g.DrawEllipse(new Pen(Color.White), chosenCenter.X - 3, chosenCenter.Y - 3, 6, 6);
+                    g.DrawEllipse(new Pen(Color.Black), chosenCenter.X - 4, chosenCenter.Y - 4, 8, 8);
+                }
+                if(verLineX != -1)
+                {
+                    g.DrawLine(new Pen(Color.Black), verLineX - 1, 0, verLineX - 1, canvas.Bottom);
+                    g.DrawLine(new Pen(Color.White), verLineX, 0, verLineX, canvas.Bottom);
+                    g.DrawLine(new Pen(Color.Black), verLineX + 1, 0, verLineX + 1, canvas.Bottom);
+                }
             }
             canvas.Image = tempCanvas;
         }
@@ -202,21 +268,25 @@ namespace gsk_course_work
         private void button1_Click(object sender, EventArgs e)
         {
             FigOption = 0;
+            Operation = 0;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             FigOption = 1;
+            Operation = 0;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             FigOption = 2;
+            Operation = 0;
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
             FigOption = 3;
+            Operation = 0;
         }
 
         private void удалитьToolStripMenuItem_Click(object sender, EventArgs e)
@@ -234,16 +304,35 @@ namespace gsk_course_work
         private void поворотВокругЗаданногоЦентраНаПроизвольныйУголToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Operation = 3;
+            helpLabel.Text = helpCenterString;
+            helpLabel.Visible = true;
         }
 
         private void зеркальноеОтражениеОтносительноЦентраФигурыToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Operation = 4;
+            chosenCenter = figures[chosenFigure].GetCenter();
+            figures[chosenFigure].PointReflection(chosenCenter);
+            Redraw();
         }
 
         private void зеркальноеОтражениеОтносительноВертикальнойПрямойToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Operation = 5;
+            helpLabel.Text = helpVerLineString;
+            helpLabel.Visible = true;
+        }
+
+        private void AngleTrackBar_Scroll(object sender, EventArgs e)
+        {
+            //TODO
+            if(chosenFigure != -1)
+            {
+                //МДА
+                figures[chosenFigure].RotateFigure(angleTrackBar.Value - prevAngle, chosenCenter);
+                prevAngle = angleTrackBar.Value;
+                Redraw();
+            }
         }
     }
 }

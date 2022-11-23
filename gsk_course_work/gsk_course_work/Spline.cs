@@ -10,11 +10,11 @@ namespace gsk_course_work
     internal class Spline : Figure
     {
         private bool newPoints = true;
-        private List<Point> drawPoints = new List<Point>();
-        int Xmin;
-        int Xmax;
-        int Ymin;
-        int Ymax;
+        private List<PointF> drawPoints = new List<PointF>();
+        float Xmin;
+        float Xmax;
+        float Ymin;
+        float Ymax;
         public Spline(Color color, Graphics g) : base(color, g) { }
 
         public override void DrawFigure()
@@ -25,14 +25,14 @@ namespace gsk_course_work
                 PointF[] L = new PointF[4];
 
                 // Касательные векторы
-                Point vector1 = VertexList[0];
-                Point vector2 = VertexList[0];
+                PointF vector1 = VertexList[0];
+                PointF vector2 = VertexList[0];
 
                 const double dt = 0.04;
                 double t = 0;
                 double xt, yt;
 
-                Point Ppred = VertexList[0], Pt = VertexList[0];
+                PointF Ppred = VertexList[0], Pt = VertexList[0];
 
                 vector1.X = 4 * (VertexList[1].X - VertexList[0].X);
                 vector1.Y = 4 * (VertexList[1].Y - VertexList[0].Y);
@@ -90,16 +90,16 @@ namespace gsk_course_work
             float[] dashPattern = { 5, 5 };
             Pen selectPen = new Pen(Color.Gray);
             selectPen.DashPattern = dashPattern;
-            G.DrawLine(selectPen, new Point(Xmin, Ymax), new Point(Xmin, Ymin));
-            G.DrawLine(selectPen, new Point(Xmin, Ymin), new Point(Xmax, Ymin));
-            G.DrawLine(selectPen, new Point(Xmax, Ymin), new Point(Xmax, Ymax));
-            G.DrawLine(selectPen, new Point(Xmax, Ymax), new Point(Xmin, Ymax));
+            G.DrawLine(selectPen, Xmin, Ymax, Xmin, Ymin);
+            G.DrawLine(selectPen, Xmin, Ymin, Xmax, Ymin);
+            G.DrawLine(selectPen, Xmax, Ymin, Xmax, Ymax);
+            G.DrawLine(selectPen, Xmax, Ymax, Xmin, Ymax);
         }
 
         public override bool ThisFigure(Point p)
         {
             int k = 0, m = 0;
-            Point Pi, Pk;
+            PointF Pi, Pk;
             m = 0;
             int n = drawPoints.Count;
             for (int i = 0; i < n; i++)
@@ -110,7 +110,7 @@ namespace gsk_course_work
                 //if ((Pi.Y <= p.Y) & (Pk.Y >= p.Y) | (Pi.Y >= p.Y) & (Pk.Y <= p.Y))
                 if((Pi.Y <= p.Y) & (Pk.Y >= p.Y) | (Pi.Y >= p.Y) & (Pk.Y <= p.Y))
                 {
-                    int x;
+                    float x;
                     if (Pi.Y == Pk.Y) x = Pi.X;
                     else x = (Pk.X - Pi.X) * (p.Y - Pi.Y) / (Pk.Y - Pi.Y) + Pi.X;
                     if (x >= p.X - 5 & x <= p.X + 5) return true;
@@ -123,11 +123,55 @@ namespace gsk_course_work
 
         public override void MoveFigure(int dx, int dy)
         {
-            Point temp = new Point();
+            PointF temp = new PointF();
             for(int i = 0; i < drawPoints.Count; i++)
             {
                 temp.X = drawPoints[i].X + dx;
                 temp.Y = drawPoints[i].Y + dy;
+                drawPoints[i] = temp;
+            }
+        }
+
+        public override PointF GetCenter()
+        {
+            GetSelection();
+            PointF center = new PointF();
+            center.X = Xmin + ((Xmax - Xmin) / 2);
+            center.Y = Ymin + ((Ymax - Ymin) / 2);
+            return center;
+        }
+
+        public override void RotateFigure(int diff, PointF center)
+        {
+            PointF temp = new PointF();
+            double cos = Math.Cos(diff * Math.PI / 180);
+            double sin = Math.Sin(diff * Math.PI / 180);
+            for (int i = 0; i < drawPoints.Count; i++)
+            {
+                temp.X = (float)(cos * (drawPoints[i].X - center.X) - sin * (drawPoints[i].Y - center.Y) + center.X);
+                temp.Y = (float)(sin * (drawPoints[i].X - center.X) + cos * (drawPoints[i].Y - center.Y) + center.Y);
+                drawPoints[i] = temp;
+            }
+        }
+
+        public override void PointReflection(PointF center)
+        {
+            PointF temp = new PointF();
+            for (int i = 0; i < drawPoints.Count; i++)
+            {
+                temp.X = (float)((drawPoints[i].X - center.X) * (-1) + center.X);
+                temp.Y = (float)((drawPoints[i].Y - center.Y) * (-1) + center.Y);
+                drawPoints[i] = temp;
+            }
+        }
+
+        public override void VerLineReflection(PointF center)
+        {
+            PointF temp = new PointF();
+            for (int i = 0; i < drawPoints.Count; i++)
+            {
+                temp.X = (float)((drawPoints[i].X - center.X) * (-1) + center.X);
+                temp.Y = drawPoints[i].Y;
                 drawPoints[i] = temp;
             }
         }

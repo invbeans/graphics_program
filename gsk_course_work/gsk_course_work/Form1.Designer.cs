@@ -40,13 +40,16 @@
             this.canvas = new System.Windows.Forms.PictureBox();
             this.figuresContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.переместитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.удалитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.поворотВокругЗаданногоЦентраНаПроизвольныйУголToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.зеркальноеОтражениеОтносительноЦентраФигурыToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.зеркальноеОтражениеОтносительноВертикальнойПрямойToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.удалитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpLabel = new System.Windows.Forms.Label();
+            this.angleTrackBar = new System.Windows.Forms.TrackBar();
             ((System.ComponentModel.ISupportInitialize)(this.colorPreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.figuresContextMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.angleTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // colorDialog
@@ -144,21 +147,14 @@
             this.зеркальноеОтражениеОтносительноВертикальнойПрямойToolStripMenuItem,
             this.удалитьToolStripMenuItem});
             this.figuresContextMenu.Name = "figuresContextMenu";
-            this.figuresContextMenu.Size = new System.Drawing.Size(504, 152);
+            this.figuresContextMenu.Size = new System.Drawing.Size(504, 124);
             // 
             // переместитьToolStripMenuItem
             // 
             this.переместитьToolStripMenuItem.Name = "переместитьToolStripMenuItem";
-            this.переместитьToolStripMenuItem.Size = new System.Drawing.Size(483, 24);
+            this.переместитьToolStripMenuItem.Size = new System.Drawing.Size(503, 24);
             this.переместитьToolStripMenuItem.Text = "Переместить";
             this.переместитьToolStripMenuItem.Click += new System.EventHandler(this.переместитьToolStripMenuItem_Click);
-            // 
-            // удалитьToolStripMenuItem
-            // 
-            this.удалитьToolStripMenuItem.Name = "удалитьToolStripMenuItem";
-            this.удалитьToolStripMenuItem.Size = new System.Drawing.Size(483, 24);
-            this.удалитьToolStripMenuItem.Text = "Удалить";
-            this.удалитьToolStripMenuItem.Click += new System.EventHandler(this.удалитьToolStripMenuItem_Click);
             // 
             // поворотВокругЗаданногоЦентраНаПроизвольныйУголToolStripMenuItem
             // 
@@ -181,11 +177,38 @@
             this.зеркальноеОтражениеОтносительноВертикальнойПрямойToolStripMenuItem.Text = "Зеркальное отражение относительно вертикальной прямой";
             this.зеркальноеОтражениеОтносительноВертикальнойПрямойToolStripMenuItem.Click += new System.EventHandler(this.зеркальноеОтражениеОтносительноВертикальнойПрямойToolStripMenuItem_Click);
             // 
+            // удалитьToolStripMenuItem
+            // 
+            this.удалитьToolStripMenuItem.Name = "удалитьToolStripMenuItem";
+            this.удалитьToolStripMenuItem.Size = new System.Drawing.Size(503, 24);
+            this.удалитьToolStripMenuItem.Text = "Удалить";
+            this.удалитьToolStripMenuItem.Click += new System.EventHandler(this.удалитьToolStripMenuItem_Click);
+            // 
+            // helpLabel
+            // 
+            this.helpLabel.AutoSize = true;
+            this.helpLabel.Location = new System.Drawing.Point(9, 145);
+            this.helpLabel.Name = "helpLabel";
+            this.helpLabel.Size = new System.Drawing.Size(78, 16);
+            this.helpLabel.TabIndex = 9;
+            this.helpLabel.Text = "Подсказки";
+            // 
+            // angleTrackBar
+            // 
+            this.angleTrackBar.Location = new System.Drawing.Point(7, 175);
+            this.angleTrackBar.Maximum = 360;
+            this.angleTrackBar.Name = "angleTrackBar";
+            this.angleTrackBar.Size = new System.Drawing.Size(291, 56);
+            this.angleTrackBar.TabIndex = 10;
+            this.angleTrackBar.Scroll += new System.EventHandler(this.AngleTrackBar_Scroll);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1409, 766);
+            this.Controls.Add(this.angleTrackBar);
+            this.Controls.Add(this.helpLabel);
             this.Controls.Add(this.segmentButton);
             this.Controls.Add(this.flagButton);
             this.Controls.Add(this.triangleButton);
@@ -199,7 +222,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.colorPreview)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).EndInit();
             this.figuresContextMenu.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.angleTrackBar)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -220,6 +245,8 @@
         private System.Windows.Forms.ToolStripMenuItem поворотВокругЗаданногоЦентраНаПроизвольныйУголToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem зеркальноеОтражениеОтносительноЦентраФигурыToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem зеркальноеОтражениеОтносительноВертикальнойПрямойToolStripMenuItem;
+        private System.Windows.Forms.Label helpLabel;
+        private System.Windows.Forms.TrackBar angleTrackBar;
     }
 }
 
