@@ -46,6 +46,7 @@
             this.удалитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpLabel = new System.Windows.Forms.Label();
             this.angleTrackBar = new System.Windows.Forms.TrackBar();
+            this.choseOperands = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.colorPreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.figuresContextMenu.SuspendLayout();
@@ -187,7 +188,7 @@
             // helpLabel
             // 
             this.helpLabel.AutoSize = true;
-            this.helpLabel.Location = new System.Drawing.Point(9, 145);
+            this.helpLabel.Location = new System.Drawing.Point(9, 183);
             this.helpLabel.Name = "helpLabel";
             this.helpLabel.Size = new System.Drawing.Size(78, 16);
             this.helpLabel.TabIndex = 9;
@@ -195,18 +196,29 @@
             // 
             // angleTrackBar
             // 
-            this.angleTrackBar.Location = new System.Drawing.Point(7, 175);
+            this.angleTrackBar.Location = new System.Drawing.Point(7, 176);
             this.angleTrackBar.Maximum = 360;
             this.angleTrackBar.Name = "angleTrackBar";
             this.angleTrackBar.Size = new System.Drawing.Size(291, 56);
             this.angleTrackBar.TabIndex = 10;
             this.angleTrackBar.Scroll += new System.EventHandler(this.AngleTrackBar_Scroll);
             // 
+            // choseOperands
+            // 
+            this.choseOperands.Location = new System.Drawing.Point(7, 139);
+            this.choseOperands.Name = "choseOperands";
+            this.choseOperands.Size = new System.Drawing.Size(206, 31);
+            this.choseOperands.TabIndex = 11;
+            this.choseOperands.Text = "Выбрать операнды ТМО";
+            this.choseOperands.UseVisualStyleBackColor = true;
+            this.choseOperands.Click += new System.EventHandler(this.button1_Click_1);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1409, 766);
+            this.Controls.Add(this.choseOperands);
             this.Controls.Add(this.angleTrackBar);
             this.Controls.Add(this.helpLabel);
             this.Controls.Add(this.segmentButton);
@@ -247,6 +259,7 @@
         private System.Windows.Forms.ToolStripMenuItem зеркальноеОтражениеОтносительноВертикальнойПрямойToolStripMenuItem;
         private System.Windows.Forms.Label helpLabel;
         private System.Windows.Forms.TrackBar angleTrackBar;
+        private System.Windows.Forms.Button choseOperands;
     }
 }
 

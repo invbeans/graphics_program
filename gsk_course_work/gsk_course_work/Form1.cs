@@ -30,7 +30,7 @@ namespace gsk_course_work
         int chosenFigure = -1;
         Point previousLocation = new Point();
         PointF chosenCenter = new PointF(-1, -1);
-        int verLineX = -1;
+        Point verLinePoint = new Point(-1, -1);
         string helpCenterString = "Выберите центр, кликнув на форме";
         string helpVerLineString = "Выберите X для вертикальной прямой";
         int prevAngle = 0;
@@ -46,6 +46,7 @@ namespace gsk_course_work
             canvas.MouseDown += Canvas_MouseDown;
             canvas.MouseMove += Canvas_MouseMove;
             canvas.MouseUp += Canvas_MouseUp;
+            angleTrackBar.MouseUp += AngleTrackBar_MouseUp;
             tempCanvas = new Bitmap(canvas.Width, canvas.Height);  
             g = Graphics.FromImage(tempCanvas);
             figures = new List<Figure>();
@@ -163,7 +164,7 @@ namespace gsk_course_work
                             helpLabel.Visible = false;
                             angleTrackBar.Visible = true;
                         }
-                        else
+                        /*else
                         {
                             prevAngle = 0;
                             chosenCenter = new PointF(-1, -1);
@@ -171,7 +172,7 @@ namespace gsk_course_work
                             angleTrackBar.Visible = false;
                             chosenFigure = -1;
                             Operation = -1; //никакая операция
-                        }
+                        }*/
                     }
                     break;
                 case 4:
@@ -186,18 +187,25 @@ namespace gsk_course_work
                     break;
                 case 5:
                     {
-                        if(verLineX == -1)
+                        if(verLinePoint.X == -1)
                         {
-                            verLineX = e.Location.X;
-                            helpLabel.Visible = false;
+                            verLinePoint.X = e.Location.X;
+                            helpLabel.Visible = false; 
+                            previousLocation = e.Location;
+                            verLinePoint.Y = e.Location.Y;
                         }
-                        else
+                        /*else
+                        {
+                            previousLocation = e.Location;
+                            verLinePoint.Y = e.Location.Y;
+                        }*/
+                        /*else
                         {
                             figures[chosenFigure].VerLineReflection(new PointF(verLineX, 0));
                             chosenFigure = -1;
-                            verLineX = -1;
+                            verLineX = -1; verLinePoint = new Point(-1, -1);
                             Operation = -1;
-                        }
+                        }*/
                     }
                     break;
             }
@@ -218,6 +226,13 @@ namespace gsk_course_work
                             }
                         }
                         break;
+                    /*case 5:
+                        {
+                            //verLinePoint.Y = e.Location.Y;
+                            previousLocation = e.Location;
+                            
+                        }
+                        break;*/
                 }
                 Redraw();
                 previousLocation = e.Location;
@@ -235,6 +250,14 @@ namespace gsk_course_work
                             Operation = 0;
                             chosenFigure = -1;
                             FigOption = -1;
+                        }
+                        break;
+                    case 5:
+                        {
+                            figures[chosenFigure].VerLineReflection(new PointF(verLinePoint.X, 0));
+                            chosenFigure = -1;
+                            verLinePoint = new Point(-1, -1);
+                            Operation = -1;
                         }
                         break;
                 }
@@ -256,11 +279,12 @@ namespace gsk_course_work
                     g.DrawEllipse(new Pen(Color.White), chosenCenter.X - 3, chosenCenter.Y - 3, 6, 6);
                     g.DrawEllipse(new Pen(Color.Black), chosenCenter.X - 4, chosenCenter.Y - 4, 8, 8);
                 }
-                if(verLineX != -1)
+                if(verLinePoint.Y != -1)
                 {
-                    g.DrawLine(new Pen(Color.Black), verLineX - 1, 0, verLineX - 1, canvas.Bottom);
-                    g.DrawLine(new Pen(Color.White), verLineX, 0, verLineX, canvas.Bottom);
-                    g.DrawLine(new Pen(Color.Black), verLineX + 1, 0, verLineX + 1, canvas.Bottom);
+                    float[] dashPattern = { 5, 5 };
+                    Pen verLinePen = new Pen(Color.Gray);
+                    verLinePen.DashPattern = dashPattern;
+                    g.DrawLine(verLinePen, verLinePoint.X, verLinePoint.Y, verLinePoint.X, previousLocation.Y);
                 }
             }
             canvas.Image = tempCanvas;
@@ -333,6 +357,22 @@ namespace gsk_course_work
                 prevAngle = angleTrackBar.Value;
                 Redraw();
             }
+        }
+
+        private void AngleTrackBar_MouseUp(object sender, MouseEventArgs e)
+        {
+            prevAngle = 0;
+            chosenCenter = new PointF(-1, -1);
+            angleTrackBar.Value = 0;
+            angleTrackBar.Visible = false;
+            chosenFigure = -1;
+            Operation = -1; //никакая операция
+            Redraw();
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+
         }
     }
 }
