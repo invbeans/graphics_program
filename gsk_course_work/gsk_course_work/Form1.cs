@@ -16,6 +16,10 @@ namespace gsk_course_work
         Bitmap tempCanvas;
         Graphics g;
         List<Figure> figures;
+        //ФИГА ФИГБ, и код операции ;))) список такой структуры будет просто рисоваться в редрав
+        //если есть элементы будет просить класс ТМОхендлер нарисовать их
+        //СВЯЗАТЬ УДАЛЕНИЕ ИЗ ОБОИХ СПИСКОВ
+        List<TMOFigure> TMOFigures;
         int FigOption = -1;
         int Operation = 0; //текущая операция
         // -1 - случайный клик (никакая операция)
@@ -25,6 +29,7 @@ namespace gsk_course_work
         // 3 - Поворот вокруг заданного центра на произвольный угол
         // 4 - Зеркальное отражение относительно центра фигуры
         // 5 - Зеркальное отражение относительно вертикальной прямой
+        // 6 - Выбор двух фигур для ТМО
         List<PointF> customPoints = new List<PointF>();
         int countPoints = 0;
         int chosenFigure = -1;
@@ -34,6 +39,9 @@ namespace gsk_course_work
         string helpCenterString = "Выберите центр, кликнув на форме";
         string helpVerLineString = "Выберите X для вертикальной прямой";
         int prevAngle = 0;
+        int chooseCount = 0;
+        int indexA = -1, indexB = -1;
+        int TMOCode = -1;
 
         Spline spline;
         Segment segment;
@@ -47,9 +55,13 @@ namespace gsk_course_work
             canvas.MouseMove += Canvas_MouseMove;
             canvas.MouseUp += Canvas_MouseUp;
             angleTrackBar.MouseUp += AngleTrackBar_MouseUp;
-            tempCanvas = new Bitmap(canvas.Width, canvas.Height);  
+
+            tempCanvas = new Bitmap(canvas.Width, canvas.Height);
             g = Graphics.FromImage(tempCanvas);
+
             figures = new List<Figure>();
+            TMOFigures = new List<TMOFigure>();
+
             helpLabel.Visible = false;
             angleTrackBar.Visible = false;
             //g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
@@ -57,7 +69,7 @@ namespace gsk_course_work
 
         private void ShowClrDlg_Click(object sender, EventArgs e)
         {
-            if(colorDialog.ShowDialog() == DialogResult.OK)
+            if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 figureColor = colorDialog.Color;
                 colorPreview.BackColor = colorDialog.Color;
@@ -93,7 +105,7 @@ namespace gsk_course_work
                     break;
                 case 1:
                     {
-                        if(polygon == null) polygon = new Polygon(figureColor, g);
+                        if (polygon == null) polygon = new Polygon(figureColor, g);
                         polygon.CalcTrianglePoints(e);
                         figures.Add(polygon);
                         polygon = null;
@@ -128,7 +140,7 @@ namespace gsk_course_work
         private void Canvas_MouseDown(object sender, MouseEventArgs e)
         {
             //Operation = 0;
-            if(e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Right)
             {
                 chosenFigure = -1;
                 for (int i = 0; i < figures.Count; i++)
@@ -157,7 +169,7 @@ namespace gsk_course_work
                     break;
                 case 3:
                     {
-                        if(chosenCenter.X == -1)
+                        if (chosenCenter.X == -1)
                         {
                             prevAngle = 0;
                             chosenCenter = e.Location;
@@ -175,7 +187,7 @@ namespace gsk_course_work
                         }*/
                     }
                     break;
-                case 4:
+                /*case 4:
                     {
                         if(chosenCenter.X != -1)
                         {
@@ -184,13 +196,13 @@ namespace gsk_course_work
                             Operation = -1;
                         }
                     }
-                    break;
+                    break;*/
                 case 5:
                     {
-                        if(verLinePoint.X == -1)
+                        if (verLinePoint.X == -1)
                         {
                             verLinePoint.X = e.Location.X;
-                            helpLabel.Visible = false; 
+                            helpLabel.Visible = false;
                             previousLocation = e.Location;
                             verLinePoint.Y = e.Location.Y;
                         }
@@ -208,13 +220,40 @@ namespace gsk_course_work
                         }*/
                     }
                     break;
+                case 6:
+                    {
+                        //нужно проверять, какая фигура выделена (индекс), многоуг ли
+                        //это, сколько фигур (1я и 2я, не больше)
+                        
+                        for (int i = 0; i < figures.Count; i++)
+                        {
+                            if (figures[i].ThisFigure(e.Location) && figures[i].GetType() == typeof(Polygon))
+                            {
+                                if (indexA == -1) indexA = i;
+                                else indexB = i;
+                                chooseCount++;
+                                if (chooseCount == 2)
+                                {
+                                    chooseCount = 0;
+                                    Operation = -1;
+                                }
+                            }
+                        }
+                    }
+                    break;
             }
             Redraw();
+            if(indexB != -1)
+            {
+                tmoContextMenu.Show(this, new Point(e.X + ((Control)sender).Left, e.Y + ((Control)sender).Top));
+                TMOFigures.Add(new TMOFigure(figures[indexA], figures[indexB], TMOCode));
+                indexA = -1; indexB = -1;
+            }
         }
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if(e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left)
             {
                 switch (Operation)
                 {
@@ -226,13 +265,13 @@ namespace gsk_course_work
                             }
                         }
                         break;
-                    /*case 5:
-                        {
-                            //verLinePoint.Y = e.Location.Y;
-                            previousLocation = e.Location;
-                            
-                        }
-                        break;*/
+                        /*case 5:
+                            {
+                                //verLinePoint.Y = e.Location.Y;
+                                previousLocation = e.Location;
+
+                            }
+                            break;*/
                 }
                 Redraw();
                 previousLocation = e.Location;
@@ -241,7 +280,7 @@ namespace gsk_course_work
 
         private void Canvas_MouseUp(object sender, MouseEventArgs e)
         {
-            if(e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left)
             {
                 switch (Operation)
                 {
@@ -270,7 +309,11 @@ namespace gsk_course_work
         {
             g.Clear(Color.White);
             for (int i = 0; i < figures.Count; i++)
-            {
+            { 
+                if (i == indexA || i == indexB)
+                {
+                    figures[i].DrawSelection();
+                }
                 figures[i].DrawFigure();
                 if (chosenFigure == i) figures[i].DrawSelection();
                 if (chosenCenter.X != -1)
@@ -286,6 +329,8 @@ namespace gsk_course_work
                     verLinePen.DashPattern = dashPattern;
                     g.DrawLine(verLinePen, verLinePoint.X, verLinePoint.Y, verLinePoint.X, previousLocation.Y);
                 }
+                //for(.... TMOFIgures)
+                //TMOHandler.DrawTMO(бла бла бла пипец конечно)
             }
             canvas.Image = tempCanvas;
         }
@@ -335,7 +380,7 @@ namespace gsk_course_work
 
         private void зеркальноеОтражениеОтносительноЦентраФигурыToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Operation = 4;
+            Operation = -1;
             chosenCenter = figures[chosenFigure].GetCenter();
             figures[chosenFigure].PointReflection(chosenCenter);
             chosenCenter = new PointF(-1, -1);
@@ -370,9 +415,19 @@ namespace gsk_course_work
             Redraw();
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
+        private void ChoseOperands_Click(object sender, EventArgs e)
         {
+            Operation = 6;
+        }
 
+        private void объединениеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TMOCode = 1;
+        }
+
+        private void разностьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TMOCode = 2;
         }
     }
 }

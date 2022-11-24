@@ -47,10 +47,14 @@
             this.helpLabel = new System.Windows.Forms.Label();
             this.angleTrackBar = new System.Windows.Forms.TrackBar();
             this.choseOperands = new System.Windows.Forms.Button();
+            this.tmoContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.объединениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.разностьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.colorPreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.figuresContextMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.angleTrackBar)).BeginInit();
+            this.tmoContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // colorDialog
@@ -188,7 +192,7 @@
             // helpLabel
             // 
             this.helpLabel.AutoSize = true;
-            this.helpLabel.Location = new System.Drawing.Point(9, 183);
+            this.helpLabel.Location = new System.Drawing.Point(9, 186);
             this.helpLabel.Name = "helpLabel";
             this.helpLabel.Size = new System.Drawing.Size(78, 16);
             this.helpLabel.TabIndex = 9;
@@ -207,11 +211,34 @@
             // 
             this.choseOperands.Location = new System.Drawing.Point(7, 139);
             this.choseOperands.Name = "choseOperands";
-            this.choseOperands.Size = new System.Drawing.Size(206, 31);
+            this.choseOperands.Size = new System.Drawing.Size(199, 31);
             this.choseOperands.TabIndex = 11;
             this.choseOperands.Text = "Выбрать операнды ТМО";
             this.choseOperands.UseVisualStyleBackColor = true;
-            this.choseOperands.Click += new System.EventHandler(this.button1_Click_1);
+            this.choseOperands.Click += new System.EventHandler(this.ChoseOperands_Click);
+            // 
+            // tmoContextMenu
+            // 
+            this.tmoContextMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.tmoContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.объединениеToolStripMenuItem,
+            this.разностьToolStripMenuItem});
+            this.tmoContextMenu.Name = "tmoContextMenu";
+            this.tmoContextMenu.Size = new System.Drawing.Size(211, 80);
+            // 
+            // объединениеToolStripMenuItem
+            // 
+            this.объединениеToolStripMenuItem.Name = "объединениеToolStripMenuItem";
+            this.объединениеToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.объединениеToolStripMenuItem.Text = "Объединение";
+            this.объединениеToolStripMenuItem.Click += new System.EventHandler(this.объединениеToolStripMenuItem_Click);
+            // 
+            // разностьToolStripMenuItem
+            // 
+            this.разностьToolStripMenuItem.Name = "разностьToolStripMenuItem";
+            this.разностьToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.разностьToolStripMenuItem.Text = "Разность";
+            this.разностьToolStripMenuItem.Click += new System.EventHandler(this.разностьToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -235,6 +262,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).EndInit();
             this.figuresContextMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.angleTrackBar)).EndInit();
+            this.tmoContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -260,6 +288,9 @@
         private System.Windows.Forms.Label helpLabel;
         private System.Windows.Forms.TrackBar angleTrackBar;
         private System.Windows.Forms.Button choseOperands;
+        private System.Windows.Forms.ContextMenuStrip tmoContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem объединениеToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem разностьToolStripMenuItem;
     }
 }
 
