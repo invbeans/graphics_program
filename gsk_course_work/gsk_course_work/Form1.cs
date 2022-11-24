@@ -37,6 +37,7 @@ namespace gsk_course_work
 
         Spline spline;
         Segment segment;
+        Polygon polygon;
         public Form1()
         {
             InitializeComponent();
@@ -71,7 +72,7 @@ namespace gsk_course_work
 
         private void AddFigure(Point e)
         {
-            Polygon pgn = new Polygon(figureColor, g);
+            //Polygon polygon = new Polygon(figureColor, g);
             switch (FigOption)
             { //какой тип фигуры
                 case 0:
@@ -91,14 +92,18 @@ namespace gsk_course_work
                     break;
                 case 1:
                     {
-                        pgn.CalcTrianglePoints(e);
-                        figures.Add(pgn);
+                        if(polygon == null) polygon = new Polygon(figureColor, g);
+                        polygon.CalcTrianglePoints(e);
+                        figures.Add(polygon);
+                        polygon = null;
                     }
                     break;
                 case 2:
                     {
-                        pgn.CalcFlagPoints(e);
-                        figures.Add(pgn);
+                        if (polygon == null) polygon = new Polygon(figureColor, g);
+                        polygon.CalcFlagPoints(e);
+                        figures.Add(polygon);
+                        polygon = null;
                     }
                     break;
                 case 3:
@@ -124,7 +129,6 @@ namespace gsk_course_work
             //Operation = 0;
             if(e.Button == MouseButtons.Right)
             {
-                //canvas.Image = tempCanvas;
                 chosenFigure = -1;
                 for (int i = 0; i < figures.Count; i++)
                 {
@@ -133,11 +137,9 @@ namespace gsk_course_work
                         figuresContextMenu.Show(this, new Point(e.X + ((Control)sender).Left, e.Y + ((Control)sender).Top));
                         chosenFigure = i;
                         Operation = 1;
-                        //figures[i].DrawSelection();
                     }
                 }
                 //Operation = 1;
-                //canvas.Image = tempCanvas;
             }
             switch (Operation)
             {
@@ -167,7 +169,6 @@ namespace gsk_course_work
                             chosenCenter = new PointF(-1, -1);
                             angleTrackBar.Value = 0;
                             angleTrackBar.Visible = false;
-                            chosenCenter = new PointF(-1, -1);
                             chosenFigure = -1;
                             Operation = -1; //никакая операция
                         }
@@ -313,6 +314,7 @@ namespace gsk_course_work
             Operation = 4;
             chosenCenter = figures[chosenFigure].GetCenter();
             figures[chosenFigure].PointReflection(chosenCenter);
+            chosenCenter = new PointF(-1, -1);
             Redraw();
         }
 
@@ -325,10 +327,8 @@ namespace gsk_course_work
 
         private void AngleTrackBar_Scroll(object sender, EventArgs e)
         {
-            //TODO
             if(chosenFigure != -1)
             {
-                //МДА
                 figures[chosenFigure].RotateFigure(angleTrackBar.Value - prevAngle, chosenCenter);
                 prevAngle = angleTrackBar.Value;
                 Redraw();

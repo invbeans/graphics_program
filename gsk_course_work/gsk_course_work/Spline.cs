@@ -100,14 +100,11 @@ namespace gsk_course_work
         {
             int k = 0, m = 0;
             PointF Pi, Pk;
-            m = 0;
             int n = drawPoints.Count;
             for (int i = 0; i < n; i++)
             {
                 if (i < n - 1) k = i + 1; else k = 0;
                 Pi = drawPoints[i]; Pk = drawPoints[k];
-                //if ((Pi.Y < p.Y) & (Pk.Y >= p.Y) | (Pi.Y >= p.Y) & (Pk.Y < p.Y))
-                //if ((Pi.Y <= p.Y) & (Pk.Y >= p.Y) | (Pi.Y >= p.Y) & (Pk.Y <= p.Y))
                 if((Pi.Y <= p.Y) & (Pk.Y >= p.Y) | (Pi.Y >= p.Y) & (Pk.Y <= p.Y))
                 {
                     float x;
@@ -115,8 +112,6 @@ namespace gsk_course_work
                     else x = (Pk.X - Pi.X) * (p.Y - Pi.Y) / (Pk.Y - Pi.Y) + Pi.X;
                     if (x >= p.X - 5 & x <= p.X + 5) return true;
                 }
-                //if ((Pi.Y < p.Y) & (Pk.Y >= p.Y) | (Pi.Y >= p.Y) & (Pk.Y < p.Y))
-                //  if ((p.Y - Pi.Y) * (Pk.X - Pi.X) / (Pk.Y - Pi.Y) + Pi.X < p.X) m++;
             }
             return false;
         }
@@ -135,9 +130,11 @@ namespace gsk_course_work
         public override PointF GetCenter()
         {
             GetSelection();
-            PointF center = new PointF();
-            center.X = Xmin + ((Xmax - Xmin) / 2);
-            center.Y = Ymin + ((Ymax - Ymin) / 2);
+            PointF center = new PointF
+            {
+                X = Xmin + ((Xmax - Xmin) / 2),
+                Y = Ymin + ((Ymax - Ymin) / 2)
+            };
             return center;
         }
 

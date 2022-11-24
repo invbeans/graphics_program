@@ -76,7 +76,6 @@ namespace gsk_course_work
         {
             int k = 0, m = 0;
             PointF Pi, Pk;
-            m = 0;
             int n = VertexList.Count;
             for (int i = 0; i < n; i++)
             {
@@ -122,9 +121,11 @@ namespace gsk_course_work
         public override PointF GetCenter()
         {
             GetSelection();
-            PointF center = new PointF();
-            center.X = Xmin + ((Xmax - Xmin) / 2);
-            center.Y = Ymin + ((Ymax - Ymin) / 2);
+            PointF center = new PointF
+            {
+                X = Xmin + ((Xmax - Xmin) / 2),
+                Y = Ymin + ((Ymax - Ymin) / 2)
+            };
             return center;
         }
 
