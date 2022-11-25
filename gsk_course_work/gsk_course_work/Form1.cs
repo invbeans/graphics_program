@@ -80,6 +80,7 @@ namespace gsk_course_work
         {
             g.Clear(Color.White);
             figures.Clear();
+            TMOFigures.Clear();
             canvas.Image = tempCanvas;
         }
 
@@ -156,6 +157,11 @@ namespace gsk_course_work
             }
             switch (Operation)
             {
+                case -1:
+                    {
+                        indexA = -1; indexB = -1;
+                    }
+                    break;
                 case 0:
                     {
                         chosenFigure = -1;
@@ -246,8 +252,8 @@ namespace gsk_course_work
             if(indexB != -1)
             {
                 tmoContextMenu.Show(this, new Point(e.X + ((Control)sender).Left, e.Y + ((Control)sender).Top));
-                TMOFigures.Add(new TMOFigure(figures[indexA], figures[indexB], TMOCode));
-                indexA = -1; indexB = -1;
+                //figures[indexA].inTMO = true; figures[indexB].inTMO = true;
+                //TMOFigures.Add(new TMOFigure(figures[indexA], figures[indexB], TMOCode));
             }
         }
 
@@ -308,30 +314,41 @@ namespace gsk_course_work
         private void Redraw()
         {
             g.Clear(Color.White);
+           
+            //рисование обычных фигур и тмо будут накладываться, как-то поменять код
             for (int i = 0; i < figures.Count; i++)
             { 
                 if (i == indexA || i == indexB)
                 {
                     figures[i].DrawSelection();
                 }
-                figures[i].DrawFigure();
+                if(figures[i].inTMO == false) figures[i].DrawFigure();
                 if (chosenFigure == i) figures[i].DrawSelection();
-                if (chosenCenter.X != -1)
-                {
-                    g.DrawEllipse(new Pen(Color.Black), chosenCenter.X - 2, chosenCenter.Y - 2, 4, 4);
-                    g.DrawEllipse(new Pen(Color.White), chosenCenter.X - 3, chosenCenter.Y - 3, 6, 6);
-                    g.DrawEllipse(new Pen(Color.Black), chosenCenter.X - 4, chosenCenter.Y - 4, 8, 8);
-                }
-                if(verLinePoint.Y != -1)
-                {
-                    float[] dashPattern = { 5, 5 };
-                    Pen verLinePen = new Pen(Color.Gray);
-                    verLinePen.DashPattern = dashPattern;
-                    g.DrawLine(verLinePen, verLinePoint.X, verLinePoint.Y, verLinePoint.X, previousLocation.Y);
-                }
-                //for(.... TMOFIgures)
-                //TMOHandler.DrawTMO(бла бла бла пипец конечно)
+                
             }
+            //for(.... TMOFIgures)
+            //TMOFigure.DrawTMO(бла бла бла пипец конечно)
+            TMOHandler handler;
+            for (int i = 0; i < TMOFigures.Count; i++)
+            {
+                //g.DrawEllipse(new Pen(Color.CadetBlue), 60 - 2, 60 - 2, 4, 4);
+                handler = new TMOHandler(figures[TMOFigures[i].FigA], figures[TMOFigures[i].FigB], TMOFigures[i].TMOCode, canvas.Width, g);
+                handler.DrawTMO();
+            }
+            if (chosenCenter.X != -1)
+            {
+                g.DrawEllipse(new Pen(Color.Black), chosenCenter.X - 2, chosenCenter.Y - 2, 4, 4);
+                g.DrawEllipse(new Pen(Color.White), chosenCenter.X - 3, chosenCenter.Y - 3, 6, 6);
+                g.DrawEllipse(new Pen(Color.Black), chosenCenter.X - 4, chosenCenter.Y - 4, 8, 8);
+            }
+            if (verLinePoint.Y != -1)
+            {
+                float[] dashPattern = { 5, 5 };
+                Pen verLinePen = new Pen(Color.Gray);
+                verLinePen.DashPattern = dashPattern;
+                g.DrawLine(verLinePen, verLinePoint.X, verLinePoint.Y, verLinePoint.X, previousLocation.Y);
+            }
+            
             canvas.Image = tempCanvas;
         }
 
@@ -362,6 +379,10 @@ namespace gsk_course_work
         private void удалитьToolStripMenuItem_Click(object sender, EventArgs e)
         {
             figures.RemoveAt(chosenFigure);
+            for(int i = 0; i < TMOFigures.Count; i++)
+            {
+                if (TMOFigures[i].FigA == chosenFigure || TMOFigures[i].FigB == chosenFigure) TMOFigures.RemoveAt(i);
+            }
             chosenFigure = -1;
             Redraw();
         }
@@ -423,11 +444,19 @@ namespace gsk_course_work
         private void объединениеToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TMOCode = 1;
+            TMOFigures.Add(new TMOFigure(indexA, indexB, TMOCode));
+            figures[indexA].inTMO = true; figures[indexB].inTMO = true;
+            indexA = -1; indexB = -1;
+            Redraw();
         }
 
         private void разностьToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TMOCode = 2;
+            TMOFigures.Add(new TMOFigure(indexA, indexB, TMOCode));
+            figures[indexA].inTMO = true; figures[indexB].inTMO = true;
+            indexA = -1; indexB = -1;
+            Redraw();
         }
     }
 }

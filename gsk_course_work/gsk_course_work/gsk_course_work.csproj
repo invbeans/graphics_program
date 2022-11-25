@@ -58,8 +58,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Segment.cs" />
     <Compile Include="Spline.cs" />
+    <Compile Include="TMOBorder.cs" />
     <Compile Include="TMOFigure.cs" />
     <Compile Include="TMOHandler.cs" />
+    <Compile Include="TMOLine.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
