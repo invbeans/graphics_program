@@ -9,11 +9,11 @@ namespace gsk_course_work
 {
     internal class TMOFigure
     {
-        public int FigA { get; set; }
-        public int FigB { get; set; }
+        public Figure FigA { get; set; }
+        public Figure FigB { get; set; }
         public int TMOCode { get; set; }
 
-        public TMOFigure(int figA, int figB, int TMOCode)
+        public TMOFigure(Figure figA, Figure figB, int TMOCode)
         {
             FigA = figA;
             FigB = figB;

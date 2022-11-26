@@ -32,7 +32,8 @@ namespace gsk_course_work
         // 6 - Выбор двух фигур для ТМО
         List<PointF> customPoints = new List<PointF>();
         int countPoints = 0;
-        int chosenFigure = -1;
+        int commonChosen = -1;
+        int TMOChosen = -1;
         Point previousLocation = new Point();
         PointF chosenCenter = new PointF(-1, -1);
         Point verLinePoint = new Point(-1, -1);
@@ -143,16 +144,26 @@ namespace gsk_course_work
             //Operation = 0;
             if (e.Button == MouseButtons.Right)
             {
-                chosenFigure = -1;
+                commonChosen = -1; TMOChosen = -1;
                 for (int i = 0; i < figures.Count; i++)
                 {
                     if (figures[i].ThisFigure(e.Location))
                     {
                         figuresContextMenu.Show(this, new Point(e.X + ((Control)sender).Left, e.Y + ((Control)sender).Top));
-                        chosenFigure = i;
+                        commonChosen = i;
                         Operation = 1;
                     }
                 }
+                for (int i = 0; i < TMOFigures.Count; i++)
+                {
+                    if (TMOFigures[i].FigA.ThisFigure(e.Location) || TMOFigures[i].FigB.ThisFigure(e.Location))
+                    {
+                        figuresContextMenu.Show(this, new Point(e.X + ((Control)sender).Left, e.Y + ((Control)sender).Top));
+                        TMOChosen = i;
+                        Operation = 1;
+                    }
+                }
+
                 //Operation = 1;
             }
             switch (Operation)
@@ -164,7 +175,8 @@ namespace gsk_course_work
                     break;
                 case 0:
                     {
-                        chosenFigure = -1;
+                        commonChosen = -1;
+                        TMOChosen = -1;
                         AddFigure(e.Location);
                     }
                     break;
@@ -265,9 +277,14 @@ namespace gsk_course_work
                 {
                     case 2:
                         {
-                            if (chosenFigure != -1)
+                            if (commonChosen != -1)
                             {
-                                figures[chosenFigure].MoveFigure(e.X - previousLocation.X, e.Y - previousLocation.Y);
+                                figures[commonChosen].MoveFigure(e.X - previousLocation.X, e.Y - previousLocation.Y);
+                            }
+                            if(TMOChosen != -1)
+                            {
+                                TMOFigures[TMOChosen].FigA.MoveFigure(e.X - previousLocation.X, e.Y - previousLocation.Y);
+                                TMOFigures[TMOChosen].FigB.MoveFigure(e.X - previousLocation.X, e.Y - previousLocation.Y);
                             }
                         }
                         break;
@@ -293,14 +310,16 @@ namespace gsk_course_work
                     case 2:
                         {
                             Operation = 0;
-                            chosenFigure = -1;
+                            commonChosen = -1;
+                            TMOChosen = -1;
                             FigOption = -1;
                         }
                         break;
                     case 5:
                         {
-                            figures[chosenFigure].VerLineReflection(new PointF(verLinePoint.X, 0));
-                            chosenFigure = -1;
+                            figures[commonChosen].VerLineReflection(new PointF(verLinePoint.X, 0));
+                            commonChosen = -1;
+                            TMOChosen = -1;
                             verLinePoint = new Point(-1, -1);
                             Operation = -1;
                         }
@@ -314,7 +333,7 @@ namespace gsk_course_work
         private void Redraw()
         {
             g.Clear(Color.White);
-           
+            TMOHandler handler;
             //рисование обычных фигур и тмо будут накладываться, как-то поменять код
             for (int i = 0; i < figures.Count; i++)
             { 
@@ -322,17 +341,25 @@ namespace gsk_course_work
                 {
                     figures[i].DrawSelection();
                 }
-                if(figures[i].inTMO == false) figures[i].DrawFigure();
-                if (chosenFigure == i) figures[i].DrawSelection();
-                
+                //if(figures[i].inTMO == false) figures[i].DrawFigure();
+                figures[i].DrawFigure();
+                if (commonChosen == i) figures[i].DrawSelection();                
+            }
+            for(int i = 0; i < TMOFigures.Count; i++)
+            {
+                if (TMOChosen == i)
+                {
+                    handler = new TMOHandler(TMOFigures[i].FigA, TMOFigures[i].FigB, TMOFigures[i].TMOCode, canvas.Width, g);
+                    handler.DrawSelection();
+                }
             }
             //for(.... TMOFIgures)
             //TMOFigure.DrawTMO(бла бла бла пипец конечно)
-            TMOHandler handler;
+            
             for (int i = 0; i < TMOFigures.Count; i++)
             {
                 //g.DrawEllipse(new Pen(Color.CadetBlue), 60 - 2, 60 - 2, 4, 4);
-                handler = new TMOHandler(figures[TMOFigures[i].FigA], figures[TMOFigures[i].FigB], TMOFigures[i].TMOCode, canvas.Width, g);
+                handler = new TMOHandler(TMOFigures[i].FigA, TMOFigures[i].FigB, TMOFigures[i].TMOCode, canvas.Width, g);
                 handler.DrawTMO();
             }
             if (chosenCenter.X != -1)
@@ -378,12 +405,12 @@ namespace gsk_course_work
 
         private void удалитьToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            figures.RemoveAt(chosenFigure);
-            for(int i = 0; i < TMOFigures.Count; i++)
-            {
-                if (TMOFigures[i].FigA == chosenFigure || TMOFigures[i].FigB == chosenFigure) TMOFigures.RemoveAt(i);
-            }
-            chosenFigure = -1;
+            //взмж нужен еще один индекс из другой истории
+            if(commonChosen != -1) figures.RemoveAt(commonChosen);
+            //продумать удаление нормально
+            //перенести в историю тмо сами фигуры и убрать их из общей истории
+            if(TMOChosen != -1) TMOFigures.RemoveAt(TMOChosen);
+            commonChosen = -1; TMOChosen = -1;
             Redraw();
         }
 
@@ -401,9 +428,10 @@ namespace gsk_course_work
 
         private void зеркальноеОтражениеОтносительноЦентраФигурыToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //добавить для тмо
             Operation = -1;
-            chosenCenter = figures[chosenFigure].GetCenter();
-            figures[chosenFigure].PointReflection(chosenCenter);
+            chosenCenter = figures[commonChosen].GetCenter();
+            figures[commonChosen].PointReflection(chosenCenter);
             chosenCenter = new PointF(-1, -1);
             Redraw();
         }
@@ -417,12 +445,13 @@ namespace gsk_course_work
 
         private void AngleTrackBar_Scroll(object sender, EventArgs e)
         {
-            if(chosenFigure != -1)
+            if(commonChosen != -1)
             {
-                figures[chosenFigure].RotateFigure(angleTrackBar.Value - prevAngle, chosenCenter);
+                figures[commonChosen].RotateFigure(angleTrackBar.Value - prevAngle, chosenCenter);
                 prevAngle = angleTrackBar.Value;
                 Redraw();
             }
+            //прицепить поворот тмо
         }
 
         private void AngleTrackBar_MouseUp(object sender, MouseEventArgs e)
@@ -431,7 +460,8 @@ namespace gsk_course_work
             chosenCenter = new PointF(-1, -1);
             angleTrackBar.Value = 0;
             angleTrackBar.Visible = false;
-            chosenFigure = -1;
+            commonChosen = -1;
+            TMOChosen = -1;
             Operation = -1; //никакая операция
             Redraw();
         }
@@ -443,9 +473,20 @@ namespace gsk_course_work
 
         private void объединениеToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //ЖЕСТКО ЗАДУМАТЬСЯ ПО РАЗДЕЛЕНИЮ ИСТОРИИ
             TMOCode = 1;
-            TMOFigures.Add(new TMOFigure(indexA, indexB, TMOCode));
-            figures[indexA].inTMO = true; figures[indexB].inTMO = true;
+            TMOFigures.Add(new TMOFigure(figures[indexA], figures[indexB], TMOCode));
+            //figures[indexA].inTMO = true; figures[indexB].inTMO = true;
+            if(indexA > indexB)
+            {
+                figures.RemoveAt(indexB);
+                figures.RemoveAt(indexA - 1);
+            }
+            else
+            {
+                figures.RemoveAt(indexA);
+                figures.RemoveAt(indexB - 1);
+            }
             indexA = -1; indexB = -1;
             Redraw();
         }
@@ -453,8 +494,18 @@ namespace gsk_course_work
         private void разностьToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TMOCode = 2;
-            TMOFigures.Add(new TMOFigure(indexA, indexB, TMOCode));
-            figures[indexA].inTMO = true; figures[indexB].inTMO = true;
+            TMOFigures.Add(new TMOFigure(figures[indexA], figures[indexB], TMOCode));
+            //figures[indexA].inTMO = true; figures[indexB].inTMO = true;
+            if (indexA > indexB)
+            {
+                figures.RemoveAt(indexB);
+                figures.RemoveAt(indexA - 1);
+            }
+            else
+            {
+                figures.RemoveAt(indexA);
+                figures.RemoveAt(indexB - 1);
+            }
             indexA = -1; indexB = -1;
             Redraw();
         }

@@ -19,6 +19,10 @@ namespace gsk_course_work
         float Ymin;
         float Ymax;
         List<TMOLine> lines = new List<TMOLine>();
+        float selXmin;
+        float selYmin;
+        float selXmax;
+        float selYmax;
 
         public TMOHandler(Figure figA, Figure figB, int TMOCode, int canvasHeight, Graphics g)
         {
@@ -134,6 +138,26 @@ namespace gsk_course_work
             {
                 list.Add(new TMOLine(xList[i], xList[i + 1], Y));
             }
+        }
+
+        public void GetSelection()
+        {
+            selXmin = Math.Min(FigA.VertexList.Min(p => p.X), FigB.VertexList.Min(p => p.X));
+            selXmax = Math.Max(FigA.VertexList.Max(p => p.X), FigB.VertexList.Max(p => p.X));
+            selYmin = Math.Min(FigA.VertexList.Min(p => p.Y), FigB.VertexList.Min(p => p.Y));
+            selYmax = Math.Max(FigA.VertexList.Max(p => p.Y), FigB.VertexList.Max(p => p.Y));
+        }
+
+        public void DrawSelection()
+        {
+            GetSelection();
+            float[] dashPattern = { 5, 5 };
+            Pen selectPen = new Pen(Color.Gray);
+            selectPen.DashPattern = dashPattern;
+            G.DrawLine(selectPen, selXmin, selYmax, selXmin, selYmin);
+            G.DrawLine(selectPen, selXmin, selYmin, selXmax, selYmin);
+            G.DrawLine(selectPen, selXmax, selYmin, selXmax, selYmax);
+            G.DrawLine(selectPen, selXmax, selYmax, selXmin, selYmax);
         }
     }
 }

@@ -10,7 +10,6 @@ namespace gsk_course_work
     internal abstract class Figure
     {
         public Color Color { get; set; }
-        public bool inTMO = false;
         public List<PointF> VertexList { get; set; }
         public Graphics G;
         public abstract void DrawFigure();
