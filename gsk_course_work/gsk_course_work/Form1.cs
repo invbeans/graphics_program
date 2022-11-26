@@ -153,18 +153,22 @@ namespace gsk_course_work
                         figuresContextMenu.Show(this, new Point(e.X + ((Control)sender).Left, e.Y + ((Control)sender).Top));
                         commonChosen = i;
                         Operation = 1;
+                        break;
                     }
                 }
-                for (int i = 0; i < TMOFigures.Count; i++)
+                if(commonChosen == -1)
                 {
-                    if (TMOFigures[i].FigA.ThisFigure(e.Location) || TMOFigures[i].FigB.ThisFigure(e.Location))
+                    for (int i = 0; i < TMOFigures.Count; i++)
                     {
-                        figuresContextMenu.Show(this, new Point(e.X + ((Control)sender).Left, e.Y + ((Control)sender).Top));
-                        TMOChosen = i;
-                        Operation = 1;
+                        if (TMOFigures[i].FigA.ThisFigure(e.Location) || TMOFigures[i].FigB.ThisFigure(e.Location))
+                        {
+                            figuresContextMenu.Show(this, new Point(e.X + ((Control)sender).Left, e.Y + ((Control)sender).Top));
+                            TMOChosen = i;
+                            Operation = 1;
+                            break;
+                        }
                     }
                 }
-
                 //Operation = 1;
             }
             switch (Operation)
@@ -340,6 +344,14 @@ namespace gsk_course_work
             g.Clear(Color.White);
             TMOHandler handler;
             //рисование обычных фигур и тмо будут накладываться, как-то поменять код
+            for (int i = 0; i < TMOFigures.Count; i++)
+            {
+                if (TMOChosen == i)
+                {
+                    handler = new TMOHandler(TMOFigures[i].FigA, TMOFigures[i].FigB, TMOFigures[i].TMOCode, canvas.Width, g);
+                    handler.DrawSelection();
+                }
+            }
             for (int i = 0; i < figures.Count; i++)
             { 
                 if (i == indexA || i == indexB)
@@ -349,15 +361,6 @@ namespace gsk_course_work
                 figures[i].DrawFigure();
                 if (commonChosen == i) figures[i].DrawSelection();                
             }
-            for(int i = 0; i < TMOFigures.Count; i++)
-            {
-                if (TMOChosen == i)
-                {
-                    handler = new TMOHandler(TMOFigures[i].FigA, TMOFigures[i].FigB, TMOFigures[i].TMOCode, canvas.Width, g);
-                    handler.DrawSelection();
-                }
-            }
-            
             for (int i = 0; i < TMOFigures.Count; i++)
             {
                 handler = new TMOHandler(TMOFigures[i].FigA, TMOFigures[i].FigB, TMOFigures[i].TMOCode, canvas.Width, g);
