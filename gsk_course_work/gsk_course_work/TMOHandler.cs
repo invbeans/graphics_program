@@ -148,6 +148,17 @@ namespace gsk_course_work
             selYmax = Math.Max(FigA.VertexList.Max(p => p.Y), FigB.VertexList.Max(p => p.Y));
         }
 
+        public PointF GetTMOCenter()
+        {
+            GetSelection();
+            PointF center = new PointF
+            {
+                X = selXmin + ((selXmax - selXmin) / 2),
+                Y = selYmin + ((selYmax - selYmin) / 2)
+            };
+            return center;
+        }
+
         public void DrawSelection()
         {
             GetSelection();
