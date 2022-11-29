@@ -17,25 +17,7 @@ namespace gsk_course_work
         {
             FigA = figA;
             FigB = figB;
-            //FigA.inTMO = true; FigB.inTMO = true;
-
             this.TMOCode = TMOCode;
         }
-
-        /*static int[] SumSetQ = { 1, 3 };
-        static int[] MinSetQ = { 2, 2 };*/
-        /*public void DrawTMO()
-        {
-            int[] SetQ;
-            SetQ = (TMOCode == 1) ? new int[] { 1, 3 } : new int[] { 2, 2 };
-            Ymin = Math.Min(FigA.VertexList.Min(item => item.Y), FigB.VertexList.Min(item => item.Y));
-            Ymax = Math.Max(FigA.VertexList.Max(item => item.Y), FigB.VertexList.Max(item => item.Y));
-            FigA.Color = Color.CadetBlue;
-            FigB.Color = Color.CadetBlue;
-            FigA.DrawFigure();
-            FigB.DrawFigure();
-        }*/
-
-
     }
 }

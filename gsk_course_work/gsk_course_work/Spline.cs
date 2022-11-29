@@ -17,6 +17,7 @@ namespace gsk_course_work
         float Ymax;
         public Spline(Color color, Graphics g) : base(color, g) { }
 
+        //метод рисования сплайна
         public override void DrawFigure()
         {
             if (newPoints)
@@ -58,7 +59,7 @@ namespace gsk_course_work
 
                     Pt.X = (int)Math.Round(xt);
                     Pt.Y = (int)Math.Round(yt);
-
+                    //сохранение полученных точек в списке
                     drawPoints.Add(Pt);
                     G.DrawLine(pen, Ppred, Pt);
                     Ppred = Pt;
@@ -68,6 +69,7 @@ namespace gsk_course_work
             }
             else
             {
+                //если это повторное рисование сплайна, используются ранее сохраненные точки
                 Pen pen = new Pen(Color);
                 for(int i = 0; i < drawPoints.Count - 1; i++)
                 {
@@ -76,14 +78,17 @@ namespace gsk_course_work
             }
         }
 
+        //метод получения точек для выделения
         public void GetSelection()
         {
+            //находятся максимальные и минимальные X и Y для рисования выделения (описанный четырёхугольник)
             Xmin = drawPoints.Min(p => p.X);
             Xmax = drawPoints.Max(p => p.X);
             Ymin = drawPoints.Min(p => p.Y);
             Ymax = drawPoints.Max(p => p.Y);
         }
 
+        //метод рисования выделения (описанного четырёхугольника)
         public override void DrawSelection()
         {
             GetSelection();
@@ -96,26 +101,29 @@ namespace gsk_course_work
             G.DrawLine(selectPen, Xmax, Ymax, Xmin, Ymax);
         }
 
-        public override bool ThisFigure(Point p)
+        //метод проверки нажатия на сплайн
+        public override bool ThisFigure(Point point)
         {
-            int k = 0, m = 0;
+            int k;
             PointF Pi, Pk;
             int n = drawPoints.Count;
             for (int i = 0; i < n; i++)
             {
                 if (i < n - 1) k = i + 1; else k = 0;
                 Pi = drawPoints[i]; Pk = drawPoints[k];
-                if((Pi.Y <= p.Y) & (Pk.Y >= p.Y) | (Pi.Y >= p.Y) & (Pk.Y <= p.Y))
+                if((Pi.Y <= point.Y) & (Pk.Y >= point.Y) | (Pi.Y >= point.Y) & (Pk.Y <= point.Y))
                 {
                     float x;
                     if (Pi.Y == Pk.Y) x = Pi.X;
-                    else x = (Pk.X - Pi.X) * (p.Y - Pi.Y) / (Pk.Y - Pi.Y) + Pi.X;
-                    if (x >= p.X - 5 & x <= p.X + 5) return true;
+                    else x = (Pk.X - Pi.X) * (point.Y - Pi.Y) / (Pk.Y - Pi.Y) + Pi.X;
+                    //допускается отступ от координаты X на 5 пикселей в любую сторону
+                    if (x >= point.X - 5 & x <= point.X + 5) return true;
                 }
             }
             return false;
         }
 
+        //метод перемещения сплайна
         public override void MoveFigure(int dx, int dy)
         {
             PointF temp = new PointF();
@@ -127,9 +135,11 @@ namespace gsk_course_work
             }
         }
 
+        //метод получения центра сплайна
         public override PointF GetCenter()
         {
             GetSelection();
+            //используется центр описанного четырёхугольника
             PointF center = new PointF
             {
                 X = Xmin + ((Xmax - Xmin) / 2),
@@ -138,36 +148,39 @@ namespace gsk_course_work
             return center;
         }
 
-        public override void RotateFigure(int diff, PointF center)
+        //метод поворота сплайна
+        public override void RotateFigure(int diff, PointF point)
         {
             PointF temp = new PointF();
             double cos = Math.Cos(diff * Math.PI / 180);
             double sin = Math.Sin(diff * Math.PI / 180);
             for (int i = 0; i < drawPoints.Count; i++)
             {
-                temp.X = (float)(cos * (drawPoints[i].X - center.X) - sin * (drawPoints[i].Y - center.Y) + center.X);
-                temp.Y = (float)(sin * (drawPoints[i].X - center.X) + cos * (drawPoints[i].Y - center.Y) + center.Y);
+                temp.X = (float)(cos * (drawPoints[i].X - point.X) - sin * (drawPoints[i].Y - point.Y) + point.X);
+                temp.Y = (float)(sin * (drawPoints[i].X - point.X) + cos * (drawPoints[i].Y - point.Y) + point.Y);
                 drawPoints[i] = temp;
             }
         }
 
-        public override void PointReflection(PointF center)
+        //метод зеркального отражения относительно точки
+        public override void PointReflection(PointF point)
         {
             PointF temp = new PointF();
             for (int i = 0; i < drawPoints.Count; i++)
             {
-                temp.X = (float)((drawPoints[i].X - center.X) * (-1) + center.X);
-                temp.Y = (float)((drawPoints[i].Y - center.Y) * (-1) + center.Y);
+                temp.X = (float)((drawPoints[i].X - point.X) * (-1) + point.X);
+                temp.Y = (float)((drawPoints[i].Y - point.Y) * (-1) + point.Y);
                 drawPoints[i] = temp;
             }
         }
 
-        public override void VerLineReflection(PointF center)
+        //метод зеркального отражения относительно вертикальной прямой
+        public override void VerLineReflection(PointF point)
         {
             PointF temp = new PointF();
             for (int i = 0; i < drawPoints.Count; i++)
             {
-                temp.X = (float)((drawPoints[i].X - center.X) * (-1) + center.X);
+                temp.X = (float)((drawPoints[i].X - point.X) * (-1) + point.X);
                 temp.Y = drawPoints[i].Y;
                 drawPoints[i] = temp;
             }

@@ -26,20 +26,20 @@ namespace gsk_course_work
 
         public TMOHandler(Figure figA, Figure figB, int TMOCode, int canvasHeight, Graphics g)
         {
-            this.FigA = figA;
-            this.FigB = figB;
+            FigA = figA;
+            FigB = figB;
             this.TMOCode = TMOCode;
-            this.canvasWidth = canvasHeight;
+            canvasWidth = canvasHeight;
             G = g;
         }
 
+        //метод рисования ТМО
         public void DrawTMO()
         {
             SetQ = (TMOCode == 1) ? new int[] { 1, 3 } : new int[] { 2, 2 };
+            //получение строк, в пределах которых может быть результат ТМО
             Ymin = Math.Min(FigA.VertexList.Min(item => item.Y), FigB.VertexList.Min(item => item.Y));
             Ymax = Math.Max(FigA.VertexList.Max(item => item.Y), FigB.VertexList.Max(item => item.Y));
-            //Вызывать в рисовании построчно с мина до макса поиск сечений
-            //если есть, выполнить на сечении ТМО, заполнить список для новой фигуры
             FillLines();
             Pen drawPen = new Pen(FigA.Color);
             for(int i = 0; i < lines.Count; i++)
@@ -48,6 +48,7 @@ namespace gsk_course_work
             }
         }
 
+        //метод для заполнения списка отрезков, из которых состоит ТМО
         private void FillLines()
         {
             List<TMOLine> figALines;
@@ -55,15 +56,16 @@ namespace gsk_course_work
             List<TMOBorder> M;
             List<int> TMOLeftX;
             List<int> TMORightX;
+            //цикл по строкам
             for (int i = (int)Ymin; i < Ymax; i++)
             {
                 M = new List<TMOBorder>();
                 figALines = new List<TMOLine>();
                 figBLines = new List<TMOLine>();
-                //вызываем искалку здесь
+                //заполнение списка сегментов фигур, лежащих на текущей строке
                 FindFigureSegments(FigA, figALines, i);
                 FindFigureSegments(FigB, figBLines, i);
-                //пытаемся заполнить, если не пусто проводим тмо
+                //заполнение списка M - границы сегментов двух фигур
                 for(int j = 0; j < figALines.Count; j++)
                 {
                     M.Add(new TMOBorder(figALines[j].xLeft, 2));
@@ -82,9 +84,11 @@ namespace gsk_course_work
                 }
                 M.Sort((e1, e2) => e1.x.CompareTo(e2.x));
                 TMOLeftX = new List<int>(); TMORightX = new List<int>();
+                //если на данной строке имеются сечения фигур, то над ними выполняется ТМО
                 if (M.Count > 0)
                 {
                     int Q = 0; int Qnew = 0;
+                    //исключительный случай - выход за левую границу формы
                     if (M[0].x >= 0 && M[0].dQ < 0)
                     {
                         TMOLeftX.Add(0);
@@ -95,20 +99,24 @@ namespace gsk_course_work
                     {
                         x = M[k].x;
                         Qnew = Q + M[k].dQ;
+                        //начало сегмента ТМО
                         if ((Q < SetQ[0] || Q > SetQ[1]) && (Qnew >= SetQ[0] && Qnew <= SetQ[1]))
                         {
                             TMOLeftX.Add(x);
                         }
+                        //конец сегмента ТМО
                         if((Q >= SetQ[0] && Q <= SetQ[1]) && (Qnew < SetQ[0] || Qnew > SetQ[1]))
                         {
                             TMORightX.Add(x);
                         }
                         Q = Qnew;
                     }
+                    //исключительный случай - выход за правую границу формы
                     if(Q >= SetQ[0] && Q <= SetQ[1])
                     {
                         TMORightX.Add(canvasWidth);
                     }
+                    //сохранение сегментов ТМО на текущей строке
                     for(int k = 0; k < TMORightX.Count; k++)
                     {
                         lines.Add(new TMOLine(TMOLeftX[k], TMORightX[k], i));
@@ -117,6 +125,7 @@ namespace gsk_course_work
             }
         }
 
+        //метод нахождения сегментов многоугольника на заданной строке Y
         private void FindFigureSegments(Figure figure, List<TMOLine> list, int Y)
         {
             List<int> xList = new List<int>();
@@ -140,6 +149,7 @@ namespace gsk_course_work
             }
         }
 
+        //метод получения точек для выделения - используются исходные фигуры
         public void GetSelection()
         {
             selXmin = Math.Min(FigA.VertexList.Min(p => p.X), FigB.VertexList.Min(p => p.X));
@@ -148,6 +158,7 @@ namespace gsk_course_work
             selYmax = Math.Max(FigA.VertexList.Max(p => p.Y), FigB.VertexList.Max(p => p.Y));
         }
 
+        //метод получения центра ТМО (центр описанного четырёхугольника)
         public PointF GetTMOCenter()
         {
             GetSelection();
@@ -159,6 +170,7 @@ namespace gsk_course_work
             return center;
         }
 
+        //метод рисования выделения (описанного четырёхугольника)
         public void DrawSelection()
         {
             GetSelection();

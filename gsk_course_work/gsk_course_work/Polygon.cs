@@ -17,14 +17,16 @@ namespace gsk_course_work
 
         public Polygon(Color color, Graphics g) : base(color, g) { }
 
+        //получение точек для построения треугольника вокруг выбранного центра
         public void CalcTrianglePoints(Point p)
         {
             VertexList = new List<PointF>();
-            VertexList.Add(new Point(p.X, p.Y - Height / 2));
-            VertexList.Add(new Point(p.X + Height / 3, p.Y + Height / 2));
-            VertexList.Add(new Point(p.X - Height / 3, p.Y + Height / 2));
+            VertexList.Add(new Point(p.X, p.Y - Height));
+            VertexList.Add(new Point(p.X + Height / 2, p.Y + Height));
+            VertexList.Add(new Point(p.X - Height / 2, p.Y + Height));
         }
 
+        //получение точек для построения флага вокруг выбранного центра
         public void CalcFlagPoints(Point p)
         {
             VertexList = new List<PointF>();
@@ -35,6 +37,7 @@ namespace gsk_course_work
             VertexList.Add(new Point(p.X - Height, p.Y + Height / 2));
         }
 
+        //метод рисования многоугольника
         public override void DrawFigure()
         {
             // Последовательно просматривая список вершин
@@ -72,7 +75,8 @@ namespace gsk_course_work
             }
         }
 
-        public override bool ThisFigure(Point p)
+        //метод для проверки нажатия на многоугольник
+        public override bool ThisFigure(Point point)
         {
             int k = 0, m = 0;
             PointF Pi, Pk;
@@ -81,20 +85,23 @@ namespace gsk_course_work
             {
                 if (i < n - 1) k = i + 1; else k = 0;
                 Pi = VertexList[i]; Pk = VertexList[k];
-                if ((Pi.Y < p.Y) & (Pk.Y >= p.Y) | (Pi.Y >= p.Y) & (Pk.Y < p.Y))
-                    if ((p.Y - Pi.Y) * (Pk.X - Pi.X) / (Pk.Y - Pi.Y) + Pi.X < p.X) m++;
+                if ((Pi.Y < point.Y) & (Pk.Y >= point.Y) | (Pi.Y >= point.Y) & (Pk.Y < point.Y))
+                    if ((point.Y - Pi.Y) * (Pk.X - Pi.X) / (Pk.Y - Pi.Y) + Pi.X < point.X) m++;
             }
             return (m % 2 == 1);
         }
 
+        //метод получения точек для выделения
         public void GetSelection()
         {
+            //находятся максимальные и минимальные X и Y для рисования выделения (описанный четырёхугольник)
             Xmin = VertexList.Min(p => p.X);
             Xmax = VertexList.Max(p => p.X);
             Ymin = VertexList.Min(p => p.Y);
             Ymax = VertexList.Max(p => p.Y);
         }
 
+        //метод рисования выделения (описанного четырёхугольника)
         public override void DrawSelection()
         {
             GetSelection();
@@ -107,6 +114,7 @@ namespace gsk_course_work
             G.DrawLine(selectPen, Xmax, Ymax, Xmin, Ymax);
         }
 
+        //метод перемещения многоугольника
         public override void MoveFigure(int dx, int dy)
         {
             PointF temp = new Point();
@@ -118,9 +126,11 @@ namespace gsk_course_work
             }
         }
 
+        //метод получения центра многоугольника
         public override PointF GetCenter()
         {
             GetSelection();
+            //используется центр описанного четырёхугольника
             PointF center = new PointF
             {
                 X = Xmin + ((Xmax - Xmin) / 2),
@@ -129,36 +139,39 @@ namespace gsk_course_work
             return center;
         }
 
-        public override void RotateFigure(int diff, PointF center)
+        //метод поворота многоугольника
+        public override void RotateFigure(int diff, PointF point)
         {
             PointF temp = new PointF();
             double cos = Math.Cos(diff * Math.PI / 180);
             double sin = Math.Sin(diff * Math.PI / 180);
             for(int i = 0; i < VertexList.Count; i++)
             {
-                temp.X = (float)(cos * (VertexList[i].X - center.X) - sin * (VertexList[i].Y - center.Y) + center.X);
-                temp.Y = (float)(sin * (VertexList[i].X - center.X) + cos * (VertexList[i].Y - center.Y) + center.Y);
+                temp.X = (float)(cos * (VertexList[i].X - point.X) - sin * (VertexList[i].Y - point.Y) + point.X);
+                temp.Y = (float)(sin * (VertexList[i].X - point.X) + cos * (VertexList[i].Y - point.Y) + point.Y);
                 VertexList[i] = temp;
             }
         }
 
-        public override void PointReflection(PointF center)
+        //метод зеркального отражения относительно точки
+        public override void PointReflection(PointF point)
         {
             PointF temp = new PointF();
             for(int i = 0; i < VertexList.Count; i++)
             {
-                temp.X = (float)((VertexList[i].X - center.X) * (-1) + center.X);
-                temp.Y = (float)((VertexList[i].Y - center.Y) * (-1) + center.Y);
+                temp.X = (float)((VertexList[i].X - point.X) * (-1) + point.X);
+                temp.Y = (float)((VertexList[i].Y - point.Y) * (-1) + point.Y);
                 VertexList[i] = temp;
             }
         }
 
-        public override void VerLineReflection(PointF center)
+        //метод зеркального отражения относительно вертикальной прямой
+        public override void VerLineReflection(PointF point)
         {
             PointF temp = new PointF();
             for (int i = 0; i < VertexList.Count; i++)
             {
-                temp.X = (float)((VertexList[i].X - center.X) * (-1) + center.X);
+                temp.X = (float)((VertexList[i].X - point.X) * (-1) + point.X);
                 temp.Y = VertexList[i].Y;
                 VertexList[i] = temp;
             }

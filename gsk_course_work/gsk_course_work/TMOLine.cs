@@ -8,10 +8,10 @@ namespace gsk_course_work
 {
     internal class TMOLine
     {
+        //левая и правая граница отрезка (координаты X) и строка (координата Y)
         public int xLeft;
         public int xRight;
         public int y;
-
 
         public TMOLine(int xLeft, int xRight, int y)
         {

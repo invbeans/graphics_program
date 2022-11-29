@@ -8,6 +8,7 @@ namespace gsk_course_work
 {
     internal class TMOBorder
     {
+        //координата X границы и приращение пороговой функции для этой границы
         public int x;
         public int dQ;
 
