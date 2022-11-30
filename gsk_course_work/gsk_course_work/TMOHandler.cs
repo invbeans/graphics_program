@@ -10,10 +10,8 @@ namespace gsk_course_work
 {
     internal class TMOHandler
     {
-        public Figure FigA { get; set; }
-        public Figure FigB { get; set; }
-        public int TMOCode { get; set; }
         public int canvasWidth;
+        public TMOFigure TMOFigure;
         Graphics G;
         int[] SetQ;
         float Ymin;
@@ -24,24 +22,24 @@ namespace gsk_course_work
         float selXmax;
         float selYmax;
 
-        public TMOHandler(Figure figA, Figure figB, int TMOCode, int canvasHeight, Graphics g)
+        public TMOHandler(TMOFigure TMOFigure, int canvasWidth, Graphics g)
         {
-            FigA = figA;
-            FigB = figB;
-            this.TMOCode = TMOCode;
-            canvasWidth = canvasHeight;
+            this.TMOFigure = TMOFigure;
+            this.canvasWidth = canvasWidth;
             G = g;
         }
 
         //метод рисования ТМО
         public void DrawTMO()
         {
-            SetQ = (TMOCode == 1) ? new int[] { 1, 3 } : new int[] { 2, 2 };
+            SetQ = (TMOFigure.TMOCode == 1) ? new int[] { 1, 3 } : new int[] { 2, 2 };
             //получение строк, в пределах которых может быть результат ТМО
-            Ymin = Math.Min(FigA.VertexList.Min(item => item.Y), FigB.VertexList.Min(item => item.Y));
-            Ymax = Math.Max(FigA.VertexList.Max(item => item.Y), FigB.VertexList.Max(item => item.Y));
+            Ymin = Math.Min(TMOFigure.FigA.VertexList.Min(item => item.Y), TMOFigure.FigB.VertexList.Min(item => item.Y));
+            Ymax = Math.Max(TMOFigure.FigA.VertexList.Max(item => item.Y), TMOFigure.FigB.VertexList.Max(item => item.Y));
+            lines.Clear();
             FillLines();
-            Pen drawPen = new Pen(FigA.Color);
+            Pen drawPen = new Pen(TMOFigure.FigA.Color);
+            TMOFigure.Lines = lines;
             for(int i = 0; i < lines.Count; i++)
             {
                 G.DrawLine(drawPen, lines[i].xLeft, lines[i].y, lines[i].xRight, lines[i].y);
@@ -63,8 +61,8 @@ namespace gsk_course_work
                 figALines = new List<TMOLine>();
                 figBLines = new List<TMOLine>();
                 //заполнение списка сегментов фигур, лежащих на текущей строке
-                FindFigureSegments(FigA, figALines, i);
-                FindFigureSegments(FigB, figBLines, i);
+                FindFigureSegments(TMOFigure.FigA, figALines, i);
+                FindFigureSegments(TMOFigure.FigB, figBLines, i);
                 //заполнение списка M - границы сегментов двух фигур
                 for(int j = 0; j < figALines.Count; j++)
                 {
@@ -152,10 +150,11 @@ namespace gsk_course_work
         //метод получения точек для выделения - используются исходные фигуры
         public void GetSelection()
         {
-            selXmin = Math.Min(FigA.VertexList.Min(p => p.X), FigB.VertexList.Min(p => p.X));
-            selXmax = Math.Max(FigA.VertexList.Max(p => p.X), FigB.VertexList.Max(p => p.X));
-            selYmin = Math.Min(FigA.VertexList.Min(p => p.Y), FigB.VertexList.Min(p => p.Y));
-            selYmax = Math.Max(FigA.VertexList.Max(p => p.Y), FigB.VertexList.Max(p => p.Y));
+            int length = TMOFigure.Lines.Count;
+            selXmin = Math.Min(TMOFigure.Lines.Min(p => p.xLeft), TMOFigure.Lines.Min(p => p.xRight));
+            selXmax = Math.Max(TMOFigure.Lines.Max(p => p.xLeft), TMOFigure.Lines.Max(p => p.xRight));
+            selYmin = Math.Min(TMOFigure.Lines.Min(p => p.y), TMOFigure.Lines.Min(p => p.y));
+            selYmax = Math.Max(TMOFigure.Lines.Max(p => p.y), TMOFigure.Lines.Max(p => p.y));
         }
 
         //метод получения центра ТМО (центр описанного четырёхугольника)
@@ -181,6 +180,19 @@ namespace gsk_course_work
             G.DrawLine(selectPen, selXmin, selYmin, selXmax, selYmin);
             G.DrawLine(selectPen, selXmax, selYmin, selXmax, selYmax);
             G.DrawLine(selectPen, selXmax, selYmax, selXmin, selYmax);
+        }
+
+        //метод проверки нажатия на фигуру
+        public bool ThisFigure(Point point)
+        {
+            for(int i = 0; i < TMOFigure.Lines.Count; i++)
+            {
+                if(point.Y == TMOFigure.Lines[i].y)
+                {
+                    if(point.X >= TMOFigure.Lines[i].xLeft && point.X <= TMOFigure.Lines[i].xRight) return true;
+                }
+            }
+            return false;
         }
     }
 }

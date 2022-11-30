@@ -90,7 +90,7 @@
             this.segmentButton.Size = new System.Drawing.Size(75, 75);
             this.segmentButton.TabIndex = 8;
             this.segmentButton.UseVisualStyleBackColor = true;
-            this.segmentButton.Click += new System.EventHandler(this.button4_Click);
+            this.segmentButton.Click += new System.EventHandler(this.SegmentButton_Click);
             // 
             // flagButton
             // 
@@ -101,7 +101,7 @@
             this.flagButton.Size = new System.Drawing.Size(75, 75);
             this.flagButton.TabIndex = 7;
             this.flagButton.UseVisualStyleBackColor = true;
-            this.flagButton.Click += new System.EventHandler(this.button3_Click);
+            this.flagButton.Click += new System.EventHandler(this.FlagButton_Click);
             // 
             // triangleButton
             // 
@@ -112,7 +112,7 @@
             this.triangleButton.Size = new System.Drawing.Size(75, 75);
             this.triangleButton.TabIndex = 6;
             this.triangleButton.UseVisualStyleBackColor = true;
-            this.triangleButton.Click += new System.EventHandler(this.button2_Click);
+            this.triangleButton.Click += new System.EventHandler(this.TriangleButton_Click);
             // 
             // splineButton
             // 
@@ -123,7 +123,7 @@
             this.splineButton.Size = new System.Drawing.Size(75, 75);
             this.splineButton.TabIndex = 5;
             this.splineButton.UseVisualStyleBackColor = true;
-            this.splineButton.Click += new System.EventHandler(this.button1_Click);
+            this.splineButton.Click += new System.EventHandler(this.SplineButton_Click);
             // 
             // colorPreview
             // 
@@ -159,35 +159,35 @@
             this.переместитьToolStripMenuItem.Name = "переместитьToolStripMenuItem";
             this.переместитьToolStripMenuItem.Size = new System.Drawing.Size(503, 24);
             this.переместитьToolStripMenuItem.Text = "Переместить";
-            this.переместитьToolStripMenuItem.Click += new System.EventHandler(this.переместитьToolStripMenuItem_Click);
+            this.переместитьToolStripMenuItem.Click += new System.EventHandler(this.MoveToolStripMenuItem_Click);
             // 
             // поворотВокругЗаданногоЦентраНаПроизвольныйУголToolStripMenuItem
             // 
             this.поворотВокругЗаданногоЦентраНаПроизвольныйУголToolStripMenuItem.Name = "поворотВокругЗаданногоЦентраНаПроизвольныйУголToolStripMenuItem";
             this.поворотВокругЗаданногоЦентраНаПроизвольныйУголToolStripMenuItem.Size = new System.Drawing.Size(503, 24);
             this.поворотВокругЗаданногоЦентраНаПроизвольныйУголToolStripMenuItem.Text = "Поворот вокруг заданного центра на произвольный угол";
-            this.поворотВокругЗаданногоЦентраНаПроизвольныйУголToolStripMenuItem.Click += new System.EventHandler(this.поворотВокругЗаданногоЦентраНаПроизвольныйУголToolStripMenuItem_Click);
+            this.поворотВокругЗаданногоЦентраНаПроизвольныйУголToolStripMenuItem.Click += new System.EventHandler(this.RotateToolStripMenuItem_Click);
             // 
             // зеркальноеОтражениеОтносительноЦентраФигурыToolStripMenuItem
             // 
             this.зеркальноеОтражениеОтносительноЦентраФигурыToolStripMenuItem.Name = "зеркальноеОтражениеОтносительноЦентраФигурыToolStripMenuItem";
             this.зеркальноеОтражениеОтносительноЦентраФигурыToolStripMenuItem.Size = new System.Drawing.Size(503, 24);
             this.зеркальноеОтражениеОтносительноЦентраФигурыToolStripMenuItem.Text = "Зеркальное отражение относительно центра фигуры";
-            this.зеркальноеОтражениеОтносительноЦентраФигурыToolStripMenuItem.Click += new System.EventHandler(this.зеркальноеОтражениеОтносительноЦентраФигурыToolStripMenuItem_Click);
+            this.зеркальноеОтражениеОтносительноЦентраФигурыToolStripMenuItem.Click += new System.EventHandler(this.PointReflectionToolStripMenuItem_Click);
             // 
             // зеркальноеОтражениеОтносительноВертикальнойПрямойToolStripMenuItem
             // 
             this.зеркальноеОтражениеОтносительноВертикальнойПрямойToolStripMenuItem.Name = "зеркальноеОтражениеОтносительноВертикальнойПрямойToolStripMenuItem";
             this.зеркальноеОтражениеОтносительноВертикальнойПрямойToolStripMenuItem.Size = new System.Drawing.Size(503, 24);
             this.зеркальноеОтражениеОтносительноВертикальнойПрямойToolStripMenuItem.Text = "Зеркальное отражение относительно вертикальной прямой";
-            this.зеркальноеОтражениеОтносительноВертикальнойПрямойToolStripMenuItem.Click += new System.EventHandler(this.зеркальноеОтражениеОтносительноВертикальнойПрямойToolStripMenuItem_Click);
+            this.зеркальноеОтражениеОтносительноВертикальнойПрямойToolStripMenuItem.Click += new System.EventHandler(this.VerLineReflectionToolStripMenuItem_Click);
             // 
             // удалитьToolStripMenuItem
             // 
             this.удалитьToolStripMenuItem.Name = "удалитьToolStripMenuItem";
             this.удалитьToolStripMenuItem.Size = new System.Drawing.Size(503, 24);
             this.удалитьToolStripMenuItem.Text = "Удалить";
-            this.удалитьToolStripMenuItem.Click += new System.EventHandler(this.удалитьToolStripMenuItem_Click);
+            this.удалитьToolStripMenuItem.Click += new System.EventHandler(this.DeleteToolStripMenuItem_Click);
             // 
             // helpLabel
             // 
@@ -224,21 +224,21 @@
             this.объединениеToolStripMenuItem,
             this.разностьToolStripMenuItem});
             this.tmoContextMenu.Name = "tmoContextMenu";
-            this.tmoContextMenu.Size = new System.Drawing.Size(211, 80);
+            this.tmoContextMenu.Size = new System.Drawing.Size(176, 52);
             // 
             // объединениеToolStripMenuItem
             // 
             this.объединениеToolStripMenuItem.Name = "объединениеToolStripMenuItem";
-            this.объединениеToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.объединениеToolStripMenuItem.Size = new System.Drawing.Size(175, 24);
             this.объединениеToolStripMenuItem.Text = "Объединение";
-            this.объединениеToolStripMenuItem.Click += new System.EventHandler(this.объединениеToolStripMenuItem_Click);
+            this.объединениеToolStripMenuItem.Click += new System.EventHandler(this.UnionToolStripMenuItem_Click);
             // 
             // разностьToolStripMenuItem
             // 
             this.разностьToolStripMenuItem.Name = "разностьToolStripMenuItem";
-            this.разностьToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.разностьToolStripMenuItem.Size = new System.Drawing.Size(175, 24);
             this.разностьToolStripMenuItem.Text = "Разность";
-            this.разностьToolStripMenuItem.Click += new System.EventHandler(this.разностьToolStripMenuItem_Click);
+            this.разностьToolStripMenuItem.Click += new System.EventHandler(this.DifferenceToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -256,6 +256,7 @@
             this.Controls.Add(this.colorPreview);
             this.Controls.Add(this.showClrDlg);
             this.Controls.Add(this.canvas);
+            this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Курсовая работа ГСК";
             ((System.ComponentModel.ISupportInitialize)(this.colorPreview)).EndInit();

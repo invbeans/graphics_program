@@ -12,6 +12,7 @@ namespace gsk_course_work
         public Figure FigA { get; set; }
         public Figure FigB { get; set; }
         public int TMOCode { get; set; }
+        public List<TMOLine> Lines { get; set; }
 
         public TMOFigure(Figure figA, Figure figB, int TMOCode)
         {
