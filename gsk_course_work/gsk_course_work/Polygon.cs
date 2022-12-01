@@ -9,7 +9,7 @@ namespace gsk_course_work
 {
     internal class Polygon : Figure
     {
-        public const int Height = 90;
+        public const int Part = 90;
         float Xmin;
         float Xmax;
         float Ymin;
@@ -21,20 +21,20 @@ namespace gsk_course_work
         public void CalcTrianglePoints(Point p)
         {
             VertexList = new List<PointF>();
-            VertexList.Add(new Point(p.X, p.Y - Height));
-            VertexList.Add(new Point(p.X + Height / 2, p.Y + Height));
-            VertexList.Add(new Point(p.X - Height / 2, p.Y + Height));
+            VertexList.Add(new Point(p.X, p.Y - Part));
+            VertexList.Add(new Point(p.X + Part / 2, p.Y + Part));
+            VertexList.Add(new Point(p.X - Part / 2, p.Y + Part));
         }
 
         //получение точек для построения флага вокруг выбранного центра
         public void CalcFlagPoints(Point p)
         {
             VertexList = new List<PointF>();
-            VertexList.Add(new Point(p.X - Height, p.Y - Height / 2));
-            VertexList.Add(new Point(p.X + Height, p.Y - Height / 2));
-            VertexList.Add(new Point(p.X + Height / 3, p.Y));
-            VertexList.Add(new Point(p.X + Height, p.Y + Height / 2));
-            VertexList.Add(new Point(p.X - Height, p.Y + Height / 2));
+            VertexList.Add(new Point(p.X - Part, p.Y - Part / 2));
+            VertexList.Add(new Point(p.X + Part, p.Y - Part / 2));
+            VertexList.Add(new Point(p.X + Part / 3, p.Y));
+            VertexList.Add(new Point(p.X + Part, p.Y + Part / 2));
+            VertexList.Add(new Point(p.X - Part, p.Y + Part / 2));
         }
 
         //метод рисования многоугольника
