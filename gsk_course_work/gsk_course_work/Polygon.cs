@@ -21,9 +21,9 @@ namespace gsk_course_work
         public void CalcTrianglePoints(Point p)
         {
             VertexList = new List<PointF>();
-            VertexList.Add(new Point(p.X, p.Y - Part));
-            VertexList.Add(new Point(p.X + Part / 2, p.Y + Part));
+            VertexList.Add(new Point(p.X - Part / 2, p.Y - Part));
             VertexList.Add(new Point(p.X - Part / 2, p.Y + Part));
+            VertexList.Add(new Point(p.X + Part / 2, p.Y + Part));
         }
 
         //получение точек для построения флага вокруг выбранного центра
