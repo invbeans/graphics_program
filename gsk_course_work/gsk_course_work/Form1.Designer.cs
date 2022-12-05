@@ -202,6 +202,7 @@
             // 
             this.angleTrackBar.Location = new System.Drawing.Point(7, 176);
             this.angleTrackBar.Maximum = 360;
+            this.angleTrackBar.Minimum = -360;
             this.angleTrackBar.Name = "angleTrackBar";
             this.angleTrackBar.Size = new System.Drawing.Size(291, 56);
             this.angleTrackBar.TabIndex = 10;
