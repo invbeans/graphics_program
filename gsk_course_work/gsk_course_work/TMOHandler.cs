@@ -46,14 +46,24 @@ namespace gsk_course_work
             }
         }
 
+        private void FillM(List<TMOBorder> M, List<TMOLine> lines, int dQ)
+        {
+            for(int i = 0; i < lines.Count; i++)
+            {
+                M.Add(new TMOBorder(lines[i].xLeft, dQ));
+            }
+            for (int i = 0; i < lines.Count; i++)
+            {
+                M.Add(new TMOBorder(lines[i].xRight, -dQ));
+            }
+        }
+
         //метод для заполнения списка отрезков, из которых состоит ТМО
         private void FillLines()
         {
             List<TMOLine> figALines;
             List<TMOLine> figBLines;
             List<TMOBorder> M;
-            List<int> TMOLeftX;
-            List<int> TMORightX;
             //цикл по строкам
             for (int i = (int)Ymin; i < Ymax; i++)
             {
@@ -64,62 +74,55 @@ namespace gsk_course_work
                 FindFigureSegments(TMOFigure.FigA, figALines, i);
                 FindFigureSegments(TMOFigure.FigB, figBLines, i);
                 //заполнение списка M - границы сегментов двух фигур
-                for(int j = 0; j < figALines.Count; j++)
-                {
-                    M.Add(new TMOBorder(figALines[j].xLeft, 2));
-                }
-                for (int j = 0; j < figALines.Count; j++)
-                {
-                    M.Add(new TMOBorder(figALines[j].xRight, -2));
-                }
-                for (int j = 0; j < figBLines.Count; j++)
-                {
-                    M.Add(new TMOBorder(figBLines[j].xLeft, 1));
-                }
-                for (int j = 0; j < figBLines.Count; j++)
-                {
-                    M.Add(new TMOBorder(figBLines[j].xRight, -1));
-                }
+                FillM(M, figALines, 2);
+                FillM(M, figBLines, 1);
                 M.Sort((e1, e2) => e1.x.CompareTo(e2.x));
-                TMOLeftX = new List<int>(); TMORightX = new List<int>();
                 //если на данной строке имеются сечения фигур, то над ними выполняется ТМО
                 if (M.Count > 0)
                 {
-                    int Q = 0; int Qnew = 0;
-                    //исключительный случай - выход за левую границу формы
-                    if (M[0].x >= 0 && M[0].dQ < 0)
-                    {
-                        TMOLeftX.Add(0);
-                        Q = -M[0].dQ;
-                    }
-                    int x;
-                    for (int k = 0; k < M.Count; k++)
-                    {
-                        x = M[k].x;
-                        Qnew = Q + M[k].dQ;
-                        //начало сегмента ТМО
-                        if ((Q < SetQ[0] || Q > SetQ[1]) && (Qnew >= SetQ[0] && Qnew <= SetQ[1]))
-                        {
-                            TMOLeftX.Add(x);
-                        }
-                        //конец сегмента ТМО
-                        if((Q >= SetQ[0] && Q <= SetQ[1]) && (Qnew < SetQ[0] || Qnew > SetQ[1]))
-                        {
-                            TMORightX.Add(x);
-                        }
-                        Q = Qnew;
-                    }
-                    //исключительный случай - выход за правую границу формы
-                    if(Q >= SetQ[0] && Q <= SetQ[1])
-                    {
-                        TMORightX.Add(canvasWidth);
-                    }
-                    //сохранение сегментов ТМО на текущей строке
-                    for(int k = 0; k < TMORightX.Count; k++)
-                    {
-                        lines.Add(new TMOLine(TMOLeftX[k], TMORightX[k], i));
-                    }
+                    DoTMO(M, i);
                 }
+            }
+        }
+
+        //метод выполнения ТМО над найденными сегментами в строке Y
+        private void DoTMO(List<TMOBorder> M, int Y)
+        {
+            List<int> TMOLeftX = new List<int>();
+            List<int> TMORightX = new List<int>();
+            int Q = 0; int Qnew = 0;
+            //исключительный случай - выход за левую границу формы
+            if (M[0].x >= 0 && M[0].dQ < 0)
+            {
+                TMOLeftX.Add(0);
+                Q = -M[0].dQ;
+            }
+            int x;
+            for (int k = 0; k < M.Count; k++)
+            {
+                x = M[k].x;
+                Qnew = Q + M[k].dQ;
+                //начало сегмента ТМО
+                if ((Q < SetQ[0] || Q > SetQ[1]) && (Qnew >= SetQ[0] && Qnew <= SetQ[1]))
+                {
+                    TMOLeftX.Add(x);
+                }
+                //конец сегмента ТМО
+                if ((Q >= SetQ[0] && Q <= SetQ[1]) && (Qnew < SetQ[0] || Qnew > SetQ[1]))
+                {
+                    TMORightX.Add(x);
+                }
+                Q = Qnew;
+            }
+            //исключительный случай - выход за правую границу формы
+            if (Q >= SetQ[0] && Q <= SetQ[1])
+            {
+                TMORightX.Add(canvasWidth);
+            }
+            //сохранение сегментов ТМО на текущей строке
+            for (int k = 0; k < TMORightX.Count; k++)
+            {
+                lines.Add(new TMOLine(TMOLeftX[k], TMORightX[k], Y));
             }
         }
 
