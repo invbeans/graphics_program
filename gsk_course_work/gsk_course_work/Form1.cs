@@ -84,6 +84,56 @@ namespace gsk_course_work
             figures.Clear();
             TMOFigures.Clear();
             canvas.Image = tempCanvas;
+            Operation = -1;
+        }
+
+        private void AddSpline(Point e)
+        {
+            if (spline == null) spline = new Spline(figureColor, g);
+            customPoints.Add(new Point(e.X, e.Y));
+            countPoints++;
+            if (countPoints == 4)
+            {
+                //когда набирается 4 точки, список копируется в поле новой фигуры и буфер очищается
+                spline.VertexList = customPoints.ConvertAll(item => new PointF(item.X, item.Y));
+                figures.Add(spline);
+                countPoints = 0;
+                customPoints.Clear();
+                spline = null;
+            }
+        }
+
+        private void AddTriangle(Point e) {
+            if (polygon == null) polygon = new Polygon(figureColor, g);
+            //треугольник рисуется вокруг выбранной точки
+            polygon.CalcTrianglePoints(e);
+            figures.Add(polygon);
+            polygon = null;
+        }
+
+        private void AddFlag(Point e)
+        {
+            if (polygon == null) polygon = new Polygon(figureColor, g);
+            //флаг рисуется вокруг выбранной точки
+            polygon.CalcFlagPoints(e);
+            figures.Add(polygon);
+            polygon = null;
+        }
+
+        private void AddSegment(Point e)
+        {
+            if (segment == null) segment = new Segment(figureColor, g);
+            customPoints.Add(new Point(e.X, e.Y));
+            countPoints++;
+            if (countPoints == 2)
+            {
+                //когда набирается 2 точки, список копируется в поле новой фигуры и буфер очищается
+                segment.VertexList = customPoints.ConvertAll(item => new PointF(item.X, item.Y));
+                figures.Add(segment);
+                customPoints.Clear();
+                countPoints = 0;
+                segment = null;
+            }
         }
         
         //метод добавления новой фигуры на форму
@@ -94,52 +144,22 @@ namespace gsk_course_work
             { 
                 case 0: //сплайн
                     {
-                        if (spline == null) spline = new Spline(figureColor, g);
-                        customPoints.Add(new Point(e.X, e.Y));
-                        countPoints++;
-                        if (countPoints == 4)
-                        {
-                            //когда набирается 4 точки, список копируется в поле новой фигуры и буфер очищается
-                            spline.VertexList = customPoints.ConvertAll(item => new PointF(item.X, item.Y));
-                            figures.Add(spline);
-                            countPoints = 0;
-                            customPoints.Clear();
-                            spline = null;
-                        }
+                        AddSpline(e);
                     }
                     break;
                 case 1: //треугольник
                     {
-                        if (polygon == null) polygon = new Polygon(figureColor, g);
-                        //треугольник рисуется вокруг выбранной точки
-                        polygon.CalcTrianglePoints(e);
-                        figures.Add(polygon);
-                        polygon = null;
+                        AddTriangle(e);
                     }
                     break;
                 case 2: //флаг
                     {
-                        if (polygon == null) polygon = new Polygon(figureColor, g);
-                        //флаг рисуется вокруг выбранной точки
-                        polygon.CalcFlagPoints(e);
-                        figures.Add(polygon);
-                        polygon = null;
+                        AddFlag(e);
                     }
                     break;
                 case 3: //отрезок
                     {
-                        if (segment == null) segment = new Segment(figureColor, g);
-                        customPoints.Add(new Point(e.X, e.Y));
-                        countPoints++;
-                        if (countPoints == 2)
-                        {
-                            //когда набирается 2 точки, список копируется в поле новой фигуры и буфер очищается
-                            segment.VertexList = customPoints.ConvertAll(item => new PointF(item.X, item.Y));
-                            figures.Add(segment);
-                            customPoints.Clear();
-                            countPoints = 0;
-                            segment = null;
-                        }
+                        AddSegment(e);
                     }
                     break;
             }
@@ -234,12 +254,12 @@ namespace gsk_course_work
                                     if (indexA == -1)
                                     {
                                         indexA = i;
-                                        chooseCount = 1;
+                                        chooseCount++;
                                     }
                                     else if (indexA != i)
                                     {
                                         indexB = i;
-                                        chooseCount = 2;
+                                        chooseCount++;
                                     }
                                     if (chooseCount == 2)
                                     {
@@ -296,7 +316,7 @@ namespace gsk_course_work
                 {
                     case 2:
                         {
-                            Operation = -1;
+                            
                             commonChosen = -1;
                             TMOChosen = -1;
                             FigOption = -1;
@@ -305,29 +325,30 @@ namespace gsk_course_work
                     case 5:
                         {
                             //зеркальное отражение относительно вертикальной прямой, когда пользователь закончит рисовать прямую
-                            if(commonChosen != -1) figures[commonChosen].VerLineReflection(new PointF(verLinePoint.X, 0));
+                            if (commonChosen != -1)
+                            {
+                                figures[commonChosen].VerLineReflection(new PointF(verLinePoint.X, 0));
+                                commonChosen = -1;
+                            }
                             if(TMOChosen != -1)
                             {
                                 TMOFigures[TMOChosen].FigA.VerLineReflection(new PointF(verLinePoint.X, 0));
                                 TMOFigures[TMOChosen].FigB.VerLineReflection(new PointF(verLinePoint.X, 0));
+                                TMOChosen = -1;
                             }
-                            commonChosen = -1; TMOChosen = -1;
                             verLinePoint = new Point(-1, -1);
-                            Operation = -1;
                         }
                         break;
                 }
+                Operation = -1;
                 Redraw();
                 previousLocation = e.Location;
             }
         }
 
-        //метод перерисовки
-        private void Redraw()
+        private void DrawTMOFigures()
         {
-            g.Clear(Color.White);
             TMOHandler handler;
-            //рисование фигур ТМО и области выделения, если выбрана фигура
             for (int i = 0; i < TMOFigures.Count; i++)
             {
                 handler = new TMOHandler(TMOFigures[i], canvas.Width, g);
@@ -337,24 +358,33 @@ namespace gsk_course_work
                 }
                 handler.DrawTMO();
             }
-            //рисование фигур примитивов и области выделения, если выбрана фигура
+        }
+
+        private void DrawPrimitives()
+        {
             for (int i = 0; i < figures.Count; i++)
-            { 
+            {
                 if (i == indexA || i == indexB)
                 {
                     figures[i].DrawSelection();
                 }
                 figures[i].DrawFigure();
-                if (commonChosen == i) figures[i].DrawSelection();                
+                if (commonChosen == i) figures[i].DrawSelection();
             }
-            //если есть выбранный пользователем центр, он рисуется
+        }
+
+        private void DrawCenter()
+        {
             if (chosenCenter.X != -1)
             {
                 g.DrawEllipse(new Pen(Color.Black), chosenCenter.X - 2, chosenCenter.Y - 2, 4, 4);
                 g.DrawEllipse(new Pen(Color.White), chosenCenter.X - 3, chosenCenter.Y - 3, 6, 6);
                 g.DrawEllipse(new Pen(Color.Black), chosenCenter.X - 4, chosenCenter.Y - 4, 8, 8);
             }
-            //рисование прямой, которую проводит пользователь для зеркального отражения от прямой
+        }
+
+        private void DrawVerLine()
+        {
             if (verLinePoint.Y != -1)
             {
                 float[] dashPattern = { 5, 5 };
@@ -362,7 +392,20 @@ namespace gsk_course_work
                 verLinePen.DashPattern = dashPattern;
                 g.DrawLine(verLinePen, verLinePoint.X, verLinePoint.Y, verLinePoint.X, previousLocation.Y);
             }
-            
+        }
+
+        //метод перерисовки
+        private void Redraw()
+        {
+            g.Clear(Color.White);
+            //рисование фигур ТМО и области выделения, если выбрана фигура
+            DrawTMOFigures();
+            //рисование фигур примитивов и области выделения, если выбрана фигура
+            DrawPrimitives();
+            //если есть выбранный пользователем центр, он рисуется
+            DrawCenter();
+            //рисование прямой, которую проводит пользователь для зеркального отражения от прямой
+            DrawVerLine();
             canvas.Image = tempCanvas;
         }
 
@@ -426,6 +469,7 @@ namespace gsk_course_work
             {
                 chosenCenter = figures[commonChosen].GetCenter();
                 figures[commonChosen].PointReflection(chosenCenter);
+                commonChosen = -1;
             }
             if(TMOChosen != -1)
             {
@@ -433,6 +477,7 @@ namespace gsk_course_work
                 chosenCenter = handler.GetTMOCenter();
                 TMOFigures[TMOChosen].FigA.PointReflection(chosenCenter);
                 TMOFigures[TMOChosen].FigB.PointReflection(chosenCenter);
+                TMOChosen = -1;
             }
             chosenCenter = new PointF(-1, -1);
             Redraw();
@@ -452,16 +497,14 @@ namespace gsk_course_work
             if(commonChosen != -1)
             {
                 figures[commonChosen].RotateFigure(angleTrackBar.Value - prevAngle, chosenCenter);
-                prevAngle = angleTrackBar.Value;
-                Redraw();
             }
             if(TMOChosen != -1)
             {
                 TMOFigures[TMOChosen].FigA.RotateFigure(angleTrackBar.Value - prevAngle, chosenCenter);
                 TMOFigures[TMOChosen].FigB.RotateFigure(angleTrackBar.Value - prevAngle, chosenCenter);
-                prevAngle = angleTrackBar.Value;
-                Redraw();
             }
+            prevAngle = angleTrackBar.Value;
+            Redraw();
         }
 
         //метод обработчик поднятия клавиши мыши над трекбаром
@@ -483,31 +526,9 @@ namespace gsk_course_work
             Operation = 6;
         }
 
-        //метод обработчик пункта контекстного меню ТМО - объединение выбранных фигур
-        private void UnionToolStripMenuItem_Click(object sender, EventArgs e)
+        private void UpdateTMOList(int code)
         {
-            TMOCode = 1;
-            TMOFigures.Add(new TMOFigure(figures[indexA], figures[indexB], TMOCode));
-            //удаление фигур из списка примитивов
-            if(indexA > indexB)
-            {
-                figures.RemoveAt(indexB);
-                figures.RemoveAt(indexA - 1);
-            }
-            else
-            {
-                figures.RemoveAt(indexA);
-                figures.RemoveAt(indexB - 1);
-            }
-            indexA = -1; indexB = -1;
-            Redraw();
-        }
-
-        //метод обработчик пункта контекстного меню ТМО - разность между выбранными фигурами
-        private void DifferenceToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            TMOCode = 2;
-            TMOFigures.Add(new TMOFigure(figures[indexA], figures[indexB], TMOCode));
+            TMOFigures.Add(new TMOFigure(figures[indexA], figures[indexB], code));
             //удаление фигур из списка примитивов
             if (indexA > indexB)
             {
@@ -520,6 +541,21 @@ namespace gsk_course_work
                 figures.RemoveAt(indexB - 1);
             }
             indexA = -1; indexB = -1;
+        }
+
+        //метод обработчик пункта контекстного меню ТМО - объединение выбранных фигур
+        private void UnionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TMOCode = 1;
+            UpdateTMOList(TMOCode);
+            Redraw();
+        }
+
+        //метод обработчик пункта контекстного меню ТМО - разность между выбранными фигурами
+        private void DifferenceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TMOCode = 2;
+            UpdateTMOList(TMOCode);
             Redraw();
         }
     }
