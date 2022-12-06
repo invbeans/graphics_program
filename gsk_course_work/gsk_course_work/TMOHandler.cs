@@ -153,11 +153,10 @@ namespace gsk_course_work
         //метод получения точек для выделения - используются исходные фигуры
         public void GetSelection()
         {
-            int length = TMOFigure.Lines.Count;
             selXmin = Math.Min(TMOFigure.Lines.Min(p => p.xLeft), TMOFigure.Lines.Min(p => p.xRight));
             selXmax = Math.Max(TMOFigure.Lines.Max(p => p.xLeft), TMOFigure.Lines.Max(p => p.xRight));
-            selYmin = Math.Min(TMOFigure.Lines.Min(p => p.y), TMOFigure.Lines.Min(p => p.y));
-            selYmax = Math.Max(TMOFigure.Lines.Max(p => p.y), TMOFigure.Lines.Max(p => p.y));
+            selYmin = TMOFigure.Lines.Min(p => p.y);
+            selYmax = TMOFigure.Lines.Max(p => p.y);
         }
 
         //метод получения центра ТМО (центр описанного четырёхугольника)

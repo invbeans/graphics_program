@@ -357,11 +357,11 @@ namespace gsk_course_work
             for (int i = 0; i < TMOFigures.Count; i++)
             {
                 handler = new TMOHandler(TMOFigures[i], canvas.Width, g);
+                handler.DrawTMO();
                 if (TMOChosen == i)
                 {
                     handler.DrawSelection();
                 }
-                handler.DrawTMO();
             }
         }
 
