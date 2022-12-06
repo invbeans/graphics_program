@@ -254,17 +254,20 @@ namespace gsk_course_work
                                     if (indexA == -1)
                                     {
                                         indexA = i;
-                                        chooseCount++;
+                                        chooseCount = 1;
+                                        break;
                                     }
                                     else if (indexA != i)
                                     {
                                         indexB = i;
-                                        chooseCount++;
+                                        chooseCount = 2;
+                                        break;
                                     }
                                     if (chooseCount == 2)
                                     {
                                         chooseCount = 0;
                                         Operation = -1;
+                                        break;
                                     }
                                 }
                             }
@@ -320,6 +323,7 @@ namespace gsk_course_work
                             commonChosen = -1;
                             TMOChosen = -1;
                             FigOption = -1;
+                            Operation = -1;
                         }
                         break;
                     case 5:
@@ -336,11 +340,12 @@ namespace gsk_course_work
                                 TMOFigures[TMOChosen].FigB.VerLineReflection(new PointF(verLinePoint.X, 0));
                                 TMOChosen = -1;
                             }
+                            Operation = -1;
                             verLinePoint = new Point(-1, -1);
                         }
                         break;
                 }
-                Operation = -1;
+                //Operation = -1;
                 Redraw();
                 previousLocation = e.Location;
             }
